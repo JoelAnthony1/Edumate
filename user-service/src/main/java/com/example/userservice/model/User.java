@@ -10,7 +10,6 @@ import jakarta.persistence.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users")
 public class User {
 
     @Id
@@ -18,4 +17,6 @@ public class User {
     private Long id;
     private String name;
     private String email;
+
+
 }
