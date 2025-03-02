@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edumate - Home</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script>
+        const API_URL = 'http://localhost:8080/api';
+
+        // Check authentication status and update UI
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const navLinks = document.querySelector('.nav-links');
+            const loginBtn = document.getElementById('login-btn');
+            const registerBtn = document.getElementById('register-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const dashboardLink = document.getElementById('dashboard-link');
+            const dashboardBtn = document.getElementById('dashboard-btn');
+            const profileLink = document.getElementById('profile-link'); // Profile link
+
+            console.log('Token:', token); // Log token to check if it's available
+
+            if (token) {
+                // User is logged in
+                navLinks.innerHTML = `
+                    <a href="index.html">Home</a>
+                    <a href="home" id="dashboard-link">Dashboard</a>
+                    <a href="profile.html" id="profile-link">Profile</a> <!-- Profile link -->
+                    <a href="#" id="logout-btn" onclick="logout()">Logout</a>
+                `;
+
+                // Show/hide buttons based on authentication status
+                loginBtn.style.display = 'none';
+                registerBtn.style.display = 'none';
+                dashboardBtn.style.display = 'inline-block';
+            } else {
+                // User is not logged in
+                navLinks.innerHTML = `
+                    <a href="index.html">Home</a>
+                    <a href="pages/login.html" id="login-link">Login</a>
+                    <a href="pages/register.html" id="register-link">Register</a>
+                `;
+
+                // Show login/register buttons and hide logout
+                loginBtn.style.display = 'inline-block';
+                registerBtn.style.display = 'inline-block';
+                dashboardBtn.style.display = 'none';
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'pages/login.html'; // Redirect to login page after logout
+        }
+
+        // Call checkAuth when the page loads
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Edumate</div>
+        <div class="nav-links">
+            <!-- These links will be dynamically updated based on auth status -->
+        </div>
+    </nav>
+
+    <main class="hero">
+        <div class="hero-content">
+            <h1>Welcome to Edumate</h1>
+            <p>Your Digital Education Platform</p>
+            <div class="cta-buttons">
+                <a href="pages/login.html" id="login-btn" class="btn btn-primary" style="display: inline-block;">Login</a>
+                <a href="pages/register.html" id="register-btn" class="btn btn-secondary" style="display: inline-block;">Register</a>
+                <a href="home" id="dashboard-btn" class="btn btn-primary" style="display: none;">Go to Dashboard</a>
+            </div>
+        </div>
+    </main>
+
+    <section class="features">
+        <h2>Why Choose Edumate?</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>For Students</h3>
+                <p>Access quality education and connect with expert teachers</p>
+            </div>
+            <div class="feature-card">
+                <h3>For Teachers</h3>
+                <p>Share your knowledge and manage your classes efficiently</p>
+            </div>
+            <div class="feature-card">
+                <h3>Easy to Use</h3>
+                <p>Simple and intuitive platform for everyone</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Edumate. All rights reserved.</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>
