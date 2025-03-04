@@ -1,0 +1,42 @@
+### POST NEW USER IF NOT AUTHORIZED AUTHORIIES FIXED ROLE_USER
+# By right users would only key in username and password but in the event they try to change authority it will fail
+POST http://localhost:8080/users
+Content-Type: application/json
+
+
+{
+    "username": "betatester",
+    "email": "betatester@email.com",
+    "password": "betatester"   
+}
+
+### GET USERS
+GET http://localhost:8080/users
+
+### GET ADMIN
+GET http://localhost:8080/admins
+Authorization: Basic admin goodpassword
+
+### Tournament
+GET http://localhost:8080/tournaments/1
+Content-Type: application/json
+Authorization: Basic admin goodpassword
+
+### Get Matches
+GET http://localhost:8080/tournaments/1/matches
+Content-Type: application/json
+Authorization: Basic admin goodpassword
+
+###
+PUT http://localhost:8080/tournaments/1/matches/1
+Content-Type: application/json
+Authorization: Basic admin goodpassword
+
+{
+  "score": "2-3",
+  "completed": true
+}
+
+###
+DELETE http://localhost:8080/tournaments/1/players/2
+Authorization: Basic betatester betatester
