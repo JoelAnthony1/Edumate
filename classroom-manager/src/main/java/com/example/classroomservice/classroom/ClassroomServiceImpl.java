@@ -28,7 +28,9 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     @Override
     public Classroom updateClassroom(Long id, Classroom newClassroomInfo) {
-        return classroomRepository.findById(id).map(classroom -> {classroom.setClassname(newClassroomInfo.getClassname());
+        return classroomRepository.findById(id).map(classroom -> {
+            classroom.setClassname(newClassroomInfo.getClassname());
+            classroom.setCapacity(newClassroomInfo.getCapacity());
             return classroomRepository.save(classroom);
         }).orElse(null);
     }

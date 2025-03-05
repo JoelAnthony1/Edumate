@@ -14,5 +14,6 @@ public class Classroom {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-generate ID
     private Long id;
     private String classname;
+    private int capacity;
 
 }
