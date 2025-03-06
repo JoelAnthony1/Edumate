@@ -1,7 +1,6 @@
 package com.example.userservice.service.impl;
 
 import com.example.userservice.model.User;
-import com.example.userservice.model.UserRole;
 import com.example.userservice.repository.UserRepository;
 import com.example.userservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,11 +41,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
-    }
-
-    @Override
-    public List<User> getUsersByRole(UserRole role) {
-        return userRepository.findByRole(role);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.example.userservice.controller;
 
 import com.example.userservice.model.User;
-import com.example.userservice.model.UserRole;
 import com.example.userservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -39,11 +38,6 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
-    }
-
-    @GetMapping("/role/{role}")
-    public ResponseEntity<List<User>> getUsersByRole(@PathVariable UserRole role) {
-        return ResponseEntity.ok(userService.getUsersByRole(role));
     }
 
     @PutMapping("/{id}")

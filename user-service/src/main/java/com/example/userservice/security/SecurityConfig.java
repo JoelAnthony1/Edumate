@@ -45,10 +45,6 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
             .requestMatchers("/api/teachers/**").hasRole("TEACHER")
             .requestMatchers("/api/users/**").hasRole("TEACHER")
             .anyRequest().authenticated()
-        )
-        .oauth2Login(oauth2 -> oauth2
-            .loginPage("/pages/login.html") // 🟢 Direct users to the login page
-            .defaultSuccessUrl("/home", true) // 🟢 Redirect to `/home` after successful login
         );
 
     http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
