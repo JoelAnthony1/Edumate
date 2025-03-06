@@ -63,4 +63,12 @@ public class ClassroomController {
         }
         return classroom;
     }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    @PostMapping("/classrooms/{classroomId}/students/{studentId}")
+    public void assignStudent(@PathVariable Long classroomId, @PathVariable Long studentId) {
+        classroomService.assignStudentToClassroom(studentId, classroomId);
+    }
+
 }

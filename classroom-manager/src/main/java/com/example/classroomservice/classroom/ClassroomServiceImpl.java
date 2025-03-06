@@ -1,15 +1,17 @@
 package com.example.classroomservice.classroom;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.springframework.stereotype.Service;
+import com.example.classroomservice.student.*;
 
 @Service
 public class ClassroomServiceImpl implements ClassroomService {
     private final ClassroomRepository classroomRepository;
+    private final StudentRepository studentRepository;
 
-    public ClassroomServiceImpl(ClassroomRepository classroomRepository){
+    public ClassroomServiceImpl(ClassroomRepository classroomRepository, StudentRepository studentRepository){
         this.classroomRepository=classroomRepository;
+        this.studentRepository=studentRepository;
     }
 
     @Override
@@ -38,4 +40,17 @@ public class ClassroomServiceImpl implements ClassroomService {
     public void deleteClassroom(Long id) {
         classroomRepository.deleteById(id);
     }
+
+    public void assignStudentToClassroom(Long studentId, Long classroomId) {
+        Optional<Student> student = studentRepository.findById(studentId);
+        Optional<Classroom> classroom = classroomRepository.findById(classroomId);
+
+        if (student.isPresent() && classroom.isPresent()) {
+            classroom.get().getStudents().add(student.get());
+            classroomRepository.save(classroom.get());
+        } else {
+            throw new IllegalArgumentException("Student or Classroom not found");
+        }
+    }
+
 }

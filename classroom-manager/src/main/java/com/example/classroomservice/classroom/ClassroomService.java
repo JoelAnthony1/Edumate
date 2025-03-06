@@ -8,4 +8,5 @@ public interface ClassroomService {
     Classroom addClassroom(Classroom classroom);
     Classroom updateClassroom(Long id, Classroom classroom);
     void deleteClassroom(Long id);
+    void assignStudentToClassroom(Long studentId, Long classroomId);
 }

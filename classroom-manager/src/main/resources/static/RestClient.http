@@ -1,11 +1,37 @@
 
+
+
+POST http://localhost:8080/classrooms/1/students/3
+Content-Type: application/json
+
+###
 POST http://localhost:8080/classrooms
 Content-Type: application/json
 
 
 {
-    "classname": "Math JC",
-    "capacity" : 15
+    "classname": "Jamie",
+    "capacity" : 1
+}
+
+###
+POST http://localhost:8080/classrooms/1/students
+Content-Type: application/json
+
+{
+    "studentName": "Jamie"
+}
+### GET students
+GET http://localhost:8080/students
+Content-Type: application/json
+
+###
+POST http://localhost:8080/students
+Content-Type: application/json
+
+
+{
+    "name": "James"
 }
 
 ### GET classrooms
@@ -16,15 +42,17 @@ Content-Type: application/json
 GET http://localhost:8080/classrooms/3
 Content-Type: application/json
 ###
-PUT http://localhost:8080/classrooms/3
+PUT http://localhost:8080/classrooms/5
 Content-Type: application/json
 Authorization: Basic admin goodpassword
 
 {
-  "classname": "Johnny lesson",
-  "capacity": 100
+  "classname": "Group study",
+  "capacity": 10
 }
 
 ###
-DELETE http://localhost:8080/classrooms/2
+DELETE http://localhost:8080/students/1
 
+###
+DELETE http://localhost:8080/classrooms/1/students/lalas
