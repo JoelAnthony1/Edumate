@@ -9,4 +9,5 @@ public interface ClassroomService {
     Classroom updateClassroom(Long id, Classroom classroom);
     void deleteClassroom(Long id);
     void assignStudentToClassroom(Long studentId, Long classroomId);
+    void removeStudentFromClassroom(Long studentId, Long classroomId);
 }

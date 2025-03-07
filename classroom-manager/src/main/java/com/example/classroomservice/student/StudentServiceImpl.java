@@ -2,6 +2,8 @@ package com.example.classroomservice.student;
 import java.util.*;
 
 import org.springframework.stereotype.Service;
+import com.example.classroomservice.exception.*;
+
 @Service
 public class StudentServiceImpl implements StudentService{
     private final StudentRepository studentRepository;

@@ -17,7 +17,7 @@ public class Classroom {
     private Long id;
     private String classname;
     private int capacity;
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
         name = "classroom_student",
         joinColumns = @JoinColumn(name = "classroom_id"),

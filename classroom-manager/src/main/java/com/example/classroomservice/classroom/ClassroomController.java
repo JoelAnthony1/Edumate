@@ -71,4 +71,9 @@ public class ClassroomController {
         classroomService.assignStudentToClassroom(studentId, classroomId);
     }
 
+    @DeleteMapping("/classrooms/{classroomId}/students/{studentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeStudentFromClassroom(@PathVariable Long classroomId, @PathVariable Long studentId) {
+        classroomService.removeStudentFromClassroom(studentId,classroomId);
+    }
 }

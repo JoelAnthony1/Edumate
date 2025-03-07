@@ -3,6 +3,7 @@ import java.util.*;
 
 import org.springframework.stereotype.Service;
 import com.example.classroomservice.student.*;
+import com.example.classroomservice.exception.*;
 
 @Service
 public class ClassroomServiceImpl implements ClassroomService {
@@ -52,5 +53,27 @@ public class ClassroomServiceImpl implements ClassroomService {
             throw new IllegalArgumentException("Student or Classroom not found");
         }
     }
+
+    public void removeStudentFromClassroom(Long studentId, Long classroomId) {
+        Optional<Classroom> classroom = classroomRepository.findById(classroomId);
+        if (classroom.isPresent()) {
+            Classroom foundClassroom = classroom.get();
+            Optional<Student> student = studentRepository.findById(studentId);
+            
+            if (student.isPresent()) {
+                if (foundClassroom.getStudents().remove(student.get())) {
+                    classroomRepository.save(foundClassroom);
+                } else {
+                    throw new IllegalArgumentException("Student with ID " + studentId + " is not in the classroom");
+                }
+            } else {
+                throw new IllegalArgumentException("Student not found");
+            }
+        } else {
+            throw new IllegalArgumentException("Classroom not found");
+        }
+    }
+    
+    
 
 }
