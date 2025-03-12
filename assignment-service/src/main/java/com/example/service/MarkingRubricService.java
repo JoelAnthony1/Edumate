@@ -10,4 +10,6 @@ import com.example.model.MarkingRubric;
 public interface MarkingRubricService {
     MarkingRubric createMarkingRubric(MarkingRubric markingRubric);
     MarkingRubric addImagesToRubric(Long rubricId, List<MultipartFile> images) throws IOException;
+    MarkingRubric getMarkingRubricById(Long rubricId);
+    byte[] getImageData(Long rubricId, Long imageId);
 }

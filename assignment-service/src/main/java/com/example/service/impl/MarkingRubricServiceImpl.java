@@ -1,6 +1,7 @@
 package com.example.service.impl;
 
 import com.example.model.MarkingRubric;
+import com.example.model.MarkingRubricImage;
 import com.example.repository.MarkingRubricRepo;
 import com.example.service.MarkingRubricService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,15 +53,31 @@ public class MarkingRubricServiceImpl implements MarkingRubricService {
         }
         
         for (MultipartFile image : images) {
-
-            // System.out.println("**************** DEBUG **********************");
-            // byte[] imageBytes = image.getBytes();
-            // System.out.println("Type of image.getBytes(): " + imageBytes.getClass().getName());
-
-            rubric.getImages().add(image.getBytes());
+            MarkingRubricImage rubricImage = new MarkingRubricImage();
+            rubricImage.setImageData(image.getBytes());
+            rubricImage.setRubric(rubric);
+            rubric.getImages().add(rubricImage);
         }
         
         return markingRubricRepo.save(rubric);
+    }
+
+    @Override
+    public MarkingRubric getMarkingRubricById(Long rubricId) {
+        return markingRubricRepo.findById(rubricId)
+            .orElseThrow(() -> new IllegalArgumentException("MarkingRubric with ID " + rubricId + " not found"));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public byte[] getImageData(Long rubricId, Long imageId) {
+        MarkingRubric rubric = markingRubricRepo.findById(rubricId)
+            .orElseThrow(() -> new IllegalArgumentException("MarkingRubric with ID " + rubricId + " not found"));
+        MarkingRubricImage image = rubric.getImages().stream()
+            .filter(img -> img.getId().equals(imageId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Image with ID " + imageId + " not found"));
+        return image.getImageData();
     }
 
 }
