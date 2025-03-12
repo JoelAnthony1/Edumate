@@ -1,14 +1,21 @@
 package com.example.controller;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.model.MarkingRubric;
 import com.example.service.MarkingRubricService;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/rubrics")
@@ -25,6 +32,25 @@ public class MarkingRubricController {
     @PostMapping
     public ResponseEntity<MarkingRubric> createMarkingRubric(@RequestBody MarkingRubric markingRubric) {
         return ResponseEntity.ok(markingRubricService.createMarkingRubric(markingRubric));
+    }
+
+    /**
+     * API Endpoint to upload multiple images for a specific MarkingRubric.
+     * @param rubricId The ID of the MarkingRubric.
+     * @param images List of MultipartFile images uploaded.
+     * @return ResponseEntity with the updated MarkingRubric.
+     */
+    @PutMapping("/{rubricId}/upload-images")
+    public ResponseEntity<MarkingRubric> uploadImagesToRubric(@PathVariable Long rubricId,
+                                                              @RequestParam("images") List<MultipartFile> images) {
+        try {
+            MarkingRubric updatedRubric = markingRubricService.addImagesToRubric(rubricId, images);
+            return ResponseEntity.ok(updatedRubric);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(null);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
 }

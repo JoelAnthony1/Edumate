@@ -2,6 +2,7 @@ package com.example.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.util.List;
 
 @Data
 @Entity
@@ -13,10 +14,12 @@ public class MarkingRubric {
 
     private String subject; // e.g., "Mathematics", "Science"
 
-    private String question; // The question this rubric applies to
 
-    @Column(columnDefinition = "TEXT") // Stores grading criteria as structured text or JSON
+    @Column(columnDefinition = "TEXT") // Stores grading criteria as text
     private String gradingCriteria;
 
-    private Double maxScore; // Maximum possible score for the question
+    @Lob
+    @ElementCollection // This allows storing multiple images
+    @Column(name = "image_data", columnDefinition = "BYTEA")
+    private List<byte[]> images; // Store images in binary format
 }
