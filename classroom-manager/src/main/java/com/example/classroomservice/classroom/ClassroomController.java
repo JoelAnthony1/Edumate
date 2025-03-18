@@ -25,8 +25,8 @@ public class ClassroomController {
 
     @ResponseBody
     @GetMapping("/classrooms")
-    public List<Classroom> getAllClassrooms() {
-        return classroomService.listClassrooms(); 
+    public List<Classroom> getAllClassrooms(@PathVariable Long userId) {
+        return classroomService.findByUserId(userId); 
     }
 
     @ResponseBody
