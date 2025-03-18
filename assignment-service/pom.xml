@@ -91,6 +91,13 @@
             <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
         </dependency>
 
+        <!-- PDF manipulation dependency -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.2</version> <!-- Use the latest stable version -->
+        </dependency>
+
     </dependencies>
 
     <!-- Add Spring AI Repositories -->

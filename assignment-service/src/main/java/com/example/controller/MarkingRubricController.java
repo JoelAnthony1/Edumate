@@ -97,6 +97,19 @@ public class MarkingRubricController {
         }
     }
 
+    @PutMapping("/{rubricId}/upload-documents")
+    public ResponseEntity<MarkingRubric> uploadDocumentToRubric(@PathVariable Long rubricId,
+                                                                  @RequestParam("document") MultipartFile document) {
+        try {
+            MarkingRubric updatedRubric = markingRubricService.addDocumentToRubric(rubricId, document);
+            return ResponseEntity.ok(updatedRubric);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(null);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
 
 
 

@@ -18,6 +18,13 @@ import org.springframework.ai.model.Media;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.chat.client.ChatClient;
 
+//PDF to PNG imports
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.ByteArrayOutputStream;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -160,6 +167,88 @@ public class MarkingRubricServiceImpl implements MarkingRubricService {
         
         return markingRubricRepo.save(rubric);
     }
+
+    @Override
+    @Transactional
+    public MarkingRubric addDocumentToRubric(Long rubricId, MultipartFile document) throws IOException {
+        Optional<MarkingRubric> optionalRubric = markingRubricRepo.findById(rubricId);
+        if (optionalRubric.isEmpty()) {
+            throw new IllegalArgumentException("MarkingRubric with ID " + rubricId + " not found");
+        }
+        MarkingRubric rubric = optionalRubric.get();
+        if (rubric.getImages() == null) {
+            rubric.setImages(new ArrayList<>());
+        }
+
+        // Load the PDF document using PDFBox
+        try (PDDocument pdfDoc = PDDocument.load(document.getInputStream())) {
+            PDFRenderer pdfRenderer = new PDFRenderer(pdfDoc);
+            for (int page = 0; page < pdfDoc.getNumberOfPages(); page++) {
+                BufferedImage bim = pdfRenderer.renderImageWithDPI(page, 100); // DPI (adjust as needed. Higher = slower but better detail)
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ImageIO.write(bim, "png", baos);
+                byte[] pngData = baos.toByteArray();
+
+                MarkingRubricImage rubricImage = new MarkingRubricImage();
+                rubricImage.setImageData(pngData);
+                rubricImage.setRubric(rubric);
+                rubric.getImages().add(rubricImage);
+            }
+        }
+
+        return markingRubricRepo.save(rubric);
+    }
+
+    // @Override
+    // @Transactional
+    // public MarkingRubric extractAnswersFromPDF(Long rubricId) throws IOException {
+    //     MarkingRubric rubric = markingRubricRepo.findById(rubricId)
+    //         .orElseThrow(() -> new IllegalArgumentException("MarkingRubric with ID " + rubricId + " not found"));
+
+    //     List<MarkingRubricImage> pdfDocuments = rubric.getImages().stream()
+    //         .filter(doc -> "application/pdf".equals(doc.getFileType()))
+    //         .collect(Collectors.toList());
+
+    //     if (pdfDocuments.isEmpty()) {
+    //         throw new IllegalArgumentException("No PDF documents found for rubric ID " + rubricId);
+    //     }
+
+
+
+    //     List<Media> mediaList = pdfDocuments.stream()
+    //         .map(img -> Media.builder()
+    //             .resource(new ByteArrayResource(img.getImageData()))
+    //             .contentType(MimeTypeUtils.IMAGE_PNG.toString())
+    //             .fileName("image.png")
+    //             .build())
+    //         .collect(Collectors.toList());
+
+    //     String inputMessage = """
+    //         Extract all mathematical equations, transformations, and solutions from the provided PDF documents in a structured text format optimized for machine readability. Follow these formatting rules:
+    //         - Use '/' for fractions (e.g., '5/3').
+    //         - Preserve mixed fractions with spaces (e.g., '2 3/4').
+    //         - Represent absolute values as '|x|'.
+    //         - Use 'sqrt(x)' for square roots.
+    //         - Denote powers using '^' (e.g., 'x^2').
+    //         - Maintain original parentheses for proper grouping.
+    //         - Accurately capture inequalities and equalities.
+    //         - Preserve Greek letters and trigonometric functions without changes.
+    //         - Keep multi-line equations with correct line breaks.
+    //         - Extract only the content present in the PDF without extra commentary.
+    //     """;
+
+    //     var userMessage = new UserMessage(inputMessage, mediaList);
+    //     var prompt = new Prompt(List.of(userMessage));
+    //     var responseSpec = chatClient
+    //         .prompt(prompt)
+    //         .options(OpenAiChatOptions.builder().build())
+    //         .call();
+    //     var chatResponse = responseSpec.chatResponse();
+    //     String extractedAnswer = chatResponse.getResult().getOutput().getText();
+
+    //     rubric.setGradingCriteria(extractedAnswer);
+    //     return markingRubricRepo.save(rubric);
+    // }
 
 
 }
