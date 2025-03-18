@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +38,16 @@ public class MarkingRubricController {
         return ResponseEntity.ok(markingRubricService.createMarkingRubric(markingRubric));
     }
 
+    @DeleteMapping("/{rubricId}/images/{imageId}")
+    public ResponseEntity<MarkingRubric> deleteImage(@PathVariable Long rubricId, @PathVariable Long imageId) {
+        try {
+            MarkingRubric updatedRubric = markingRubricService.deleteImageFromRubric(rubricId, imageId);
+            return ResponseEntity.ok(updatedRubric);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
     /**
      * API Endpoint to upload multiple images for a specific MarkingRubric.
      * @param rubricId The ID of the MarkingRubric.
@@ -56,6 +67,16 @@ public class MarkingRubricController {
         }
     }
 
+    @GetMapping("/{rubricId}")
+    public ResponseEntity<MarkingRubric> getMarkingRubric(@PathVariable Long rubricId) {
+        try {
+            MarkingRubric rubric = markingRubricService.getMarkingRubricById(rubricId);
+            return ResponseEntity.ok(rubric);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
     @GetMapping("/{rubricId}/images/{imageId}")
     public ResponseEntity<byte[]> getImage(@PathVariable Long rubricId, @PathVariable Long imageId) {
         byte[] imageData = markingRubricService.getImageData(rubricId, imageId);
@@ -63,6 +84,19 @@ public class MarkingRubricController {
             .contentType(MediaType.IMAGE_PNG)
             .body(imageData);
     }
+
+    @PutMapping("/{rubricId}/extractPNG")
+    public ResponseEntity<MarkingRubric> extractAnswersFromPNG(@PathVariable Long rubricId) {
+        try {
+            MarkingRubric updatedRubric = markingRubricService.extractAnswersFromPNG(rubricId);
+            return ResponseEntity.ok(updatedRubric);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(null);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
 
 
 

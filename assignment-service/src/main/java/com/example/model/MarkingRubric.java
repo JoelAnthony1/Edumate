@@ -5,6 +5,8 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
 @Entity
@@ -20,12 +22,8 @@ public class MarkingRubric {
     @Column(columnDefinition = "TEXT") // Stores grading criteria as text
     private String gradingCriteria;
 
-    // @Lob
-    // @ElementCollection // This allows storing multiple images
-    // @Column(name = "image_data", columnDefinition = "BYTEA")
-    // private List<byte[]> images; // Store images in binary format
-
     @OneToMany(mappedBy = "rubric", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore  // Exclude images from JSON responses
     private List<MarkingRubricImage> images = new ArrayList<>();
 
 }

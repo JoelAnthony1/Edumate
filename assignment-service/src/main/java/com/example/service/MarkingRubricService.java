@@ -12,4 +12,6 @@ public interface MarkingRubricService {
     MarkingRubric addImagesToRubric(Long rubricId, List<MultipartFile> images) throws IOException;
     MarkingRubric getMarkingRubricById(Long rubricId);
     byte[] getImageData(Long rubricId, Long imageId);
+    MarkingRubric extractAnswersFromPNG(Long rubricId) throws IOException;
+    MarkingRubric deleteImageFromRubric(Long rubricId, Long imageId);
 }
