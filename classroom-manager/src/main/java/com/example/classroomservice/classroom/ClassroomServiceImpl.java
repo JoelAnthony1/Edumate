@@ -16,8 +16,8 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public List<Classroom> listClassrooms(){
-        return classroomRepository.findAll();
+    public List<Classroom> findByUserId(Long userId){
+        return classroomRepository.findByUserId(userId);
     }
     @Override
     public Classroom getClassroom(Long id) {
