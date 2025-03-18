@@ -1,7 +1,7 @@
 
 
 ###
-DELETE http://localhost:8080/classrooms/1/students/3
+DELETE http://localhost:8080/classrooms/1/students/1
 ###
 POST http://localhost:8080/classrooms/1/students/2
 Content-Type: application/json
@@ -12,8 +12,9 @@ Content-Type: application/json
 
 
 {
-    "classname": "Jamie",
-    "capacity" : 1
+    "classname": "Jamie's tutor",
+    "subject" : "Maths" ,
+    "description" : "Jamies private tution at my home"
 }
 
 ###
@@ -33,7 +34,7 @@ Content-Type: application/json
 
 
 {
-    "name": "James"
+    "name": "Jamie"
 }
 
 ### GET classrooms

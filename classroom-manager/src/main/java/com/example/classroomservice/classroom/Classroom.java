@@ -16,7 +16,8 @@ public class Classroom {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-generate ID
     private Long id;
     private String classname;
-    private int capacity;
+    private String subject;
+    private String description;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
         name = "classroom_student",

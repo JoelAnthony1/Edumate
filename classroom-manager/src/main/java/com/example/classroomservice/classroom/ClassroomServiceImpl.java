@@ -33,7 +33,8 @@ public class ClassroomServiceImpl implements ClassroomService {
     public Classroom updateClassroom(Long id, Classroom newClassroomInfo) {
         return classroomRepository.findById(id).map(classroom -> {
             classroom.setClassname(newClassroomInfo.getClassname());
-            classroom.setCapacity(newClassroomInfo.getCapacity());
+            classroom.setSubject(newClassroomInfo.getSubject());
+            classroom.setDescription(newClassroomInfo.getDescription());
             return classroomRepository.save(classroom);
         }).orElse(null);
     }
