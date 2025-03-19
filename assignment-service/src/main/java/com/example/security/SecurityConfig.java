@@ -20,6 +20,12 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.POST, "/api/rubrics/**").permitAll()
                 .requestMatchers(HttpMethod.PUT, "/api/rubrics/**").authenticated()  // Require authentication for PUT
+
+                .requestMatchers(HttpMethod.POST, "/api/submission/**").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/submission/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/submission/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/submission/**").authenticated()
+
                 .anyRequest().authenticated()
             )
             .httpBasic(); // Enable Basic Authentication
