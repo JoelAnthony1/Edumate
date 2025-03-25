@@ -3,6 +3,10 @@ package com.example.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Data
 @Entity
 public class MarkingRubric {
@@ -13,10 +17,12 @@ public class MarkingRubric {
 
     private String subject; // e.g., "Mathematics", "Science"
 
-    private String question; // The question this rubric applies to
 
-    @Column(columnDefinition = "TEXT") // Stores grading criteria as structured text or JSON
+    @Column(columnDefinition = "TEXT") // Stores grading criteria as text
     private String gradingCriteria;
 
-    private Double maxScore; // Maximum possible score for the question
+    @OneToMany(mappedBy = "rubric", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore  // Exclude images from JSON responses
+    private List<MarkingRubricImage> images = new ArrayList<>();
+
 }
