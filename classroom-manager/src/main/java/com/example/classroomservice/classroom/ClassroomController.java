@@ -13,9 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
-@Controller
+@RestController
 public class ClassroomController {
     private ClassroomService classroomService;
 
@@ -25,9 +26,12 @@ public class ClassroomController {
 
     @ResponseBody
     @GetMapping("/classrooms")
-    public List<Classroom> getAllClassrooms(@PathVariable Long userId) {
-        return classroomService.findByUserId(userId); 
+public List<Classroom> getAllClassrooms(@RequestParam(required = false) Long userId) {
+    if (userId == null) {
+        throw new IllegalArgumentException("User ID is required");
     }
+    return classroomService.findByUserId(userId);
+}
 
     @ResponseBody
     @GetMapping("/classrooms/{id}")

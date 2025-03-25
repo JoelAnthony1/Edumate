@@ -25,5 +25,10 @@ public class Classroom {
         joinColumns = @JoinColumn(name = "classroom_id"),
         inverseJoinColumns = @JoinColumn(name = "student_id")
     )
+
     private Set<Student> students = new HashSet<>();
+    // public void addStudent(Student student) {
+    //     this.students.add(student);
+    //     student.getClassrooms().add(this);
+    // }
 }
