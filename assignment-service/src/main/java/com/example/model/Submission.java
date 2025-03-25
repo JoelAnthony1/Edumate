@@ -18,12 +18,13 @@ public class Submission {
 
     private Long studentId; // Reference to student
     private Long classroomId; // Reference to classroom
-    private Long markingRubricId; // Reference to marking rubric
+    
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "marking_rubric_id", nullable = false)
+    private MarkingRubric markingRubric;
 
     @Column(columnDefinition = "TEXT") // Use TEXT type to handle longer AI extracted answer
     private String writtenAnswer;
-
-    private LocalDateTime submissionTime;
 
     // commented out as havent created ENUM stuff
     // @Enumerated(EnumType.STRING)
