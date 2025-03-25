@@ -12,9 +12,9 @@ Content-Type: application/json
 
 
 {
-    "classname": "Jamie's tutor",
+    "classname": "Nickle",
     "subject" : "Maths" ,
-    "description" : "Jamies private tution at my home"
+    "description" : "Tuition centre"
 }
 
 ###
