@@ -20,7 +20,7 @@ public class Analysis {
 
     private Long studentId;
 
-    private List<String> feedbackHistory;
+    private List<String> feedbackHistory = new ArrayList<>();
 
     private String summary; // overall feedback for student; to be updated after each grading
 
