@@ -49,11 +49,31 @@ public class AnalysisServiceImpl implements AnalysisService {
     private final ChatClient chatClient;
 
     @Autowired
-    public analysisServiceImpl(AnalysisRepo analysisRepo, ChatClient chatClient) {
+    public AnalysisServiceImpl(AnalysisRepo analysisRepo, ChatClient chatClient) {
         this.analysisRepo = analysisRepo;
         this.chatClient = chatClient;
     }
 
+    @Override
+    public Analysis createAnalysis(Analysis analysis) {
+        return analysisRepo.save(analysis);
+    }
+
+    @Override
+    public Optional<Analysis> getAnalysisById(Long id) {
+        return analysisRepo.findById(id);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAnalysis(Long id) {
+        if (!analysisRepo.existsById(id)) {
+            throw new RuntimeException("Analysis not found with id: " + id);
+        }
+        analysisRepo.deleteById(id);
+    }
+
+    @Override
     public List<String> addFeedbackToAnalysis(Long analysisId, String feedback) {
         // Retrieve the analysis with its associated feedback
         Analysis analysis = analysisRepo.findById(analysisId)
@@ -65,6 +85,7 @@ public class AnalysisServiceImpl implements AnalysisService {
         return analysis.getFeedbackHistory();
     }
 
+    @Override
     public String createAnalysisSummary(Long analysisId, List<String> allFeedbacks) {
         // Retrieve the analysis with its associated feedback
         Analysis analysis = analysisRepo.findById(analysisId)
