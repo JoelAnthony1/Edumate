@@ -1,10 +1,7 @@
 package com.example.service.impl;
 
 import com.example.service.*;
-import com.example.model.MarkingRubric;
-import com.example.model.MarkingRubricImage;
-import com.example.model.Submission;
-import com.example.model.SubmissionImage;
+import com.example.model.*;
 import com.example.repository.MarkingRubricRepo;
 import com.example.repository.SubmissionRepo;
 import com.example.service.MarkingRubricService;
@@ -41,12 +38,13 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     private final SubmissionRepo submissionRepo;
     private final ChatClient chatClient;
-    private final AnalysisServiceImpl analysisServiceImpl;
+    private final AnalysisService analysisService;
 
     @Autowired
-    public SubmissionServiceImpl(SubmissionRepo submissionRepo, ChatClient chatClient) {
+    public SubmissionServiceImpl(SubmissionRepo submissionRepo, ChatClient chatClient, AnalysisService analysisService) {
         this.submissionRepo = submissionRepo;
         this.chatClient = chatClient;
+        this.analysisService = analysisService;
     }
 
     @Override
@@ -206,9 +204,9 @@ public class SubmissionServiceImpl implements SubmissionService {
         
         String feedback = responseSpec.chatResponse().getResult().getOutput().getText();
         // add feedback to Analysis object
-        List<String> allFeedbacks = analysisServiceImpl.addFeedbackToAnalysis(feedback);
+        List<FeedbackHistory> allFeedbacks = analysisService.addFeedbackToAnalysis(analysisId, feedback);
         // update Summary for latest feedback
-        analysisServiceImpl.createAnalysisSummary(allFeedbacks);
+        analysisService.createAnalysisSummary(analysisId, allFeedbacks);
 
 
         submission.setFeedback(feedback);

@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.model.Submission;
+import com.example.model.*;
 
 public interface AnalysisService {
     // CRUD
@@ -14,6 +14,6 @@ public interface AnalysisService {
     Optional<Analysis> getAnalysisById(Long id);
     void deleteAnalysis(Long id);
 
-    List<String> addFeedbackToAnalysis(Long analysisId, String feedback);
-    String createAnalysisSummary(Long analysisId, List<String> allFeedbacks); 
+    List<FeedbackHistory> addFeedbackToAnalysis(Long analysisId, String feedback);
+    String createAnalysisSummary(Long analysisId, List<FeedbackHistory> allFeedbacks); 
 }

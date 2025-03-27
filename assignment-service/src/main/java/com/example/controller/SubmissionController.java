@@ -115,9 +115,9 @@ public class SubmissionController {
             return ResponseEntity.ok(gradedSubmission);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(null);
-        }
+        } // catch (Exception e) {
+        //     return ResponseEntity.internalServerError().body(null);
+        // }
     }
 
 

@@ -1,10 +1,7 @@
 package com.example.service.impl;
 
-import com.example.service.SubmissionService;
-import com.example.model.MarkingRubric;
-import com.example.model.MarkingRubricImage;
-import com.example.model.Submission;
-import com.example.model.SubmissionImage;
+import com.example.service.AnalysisService;
+import com.example.model.*;
 import com.example.repository.MarkingRubricRepo;
 import com.example.repository.AnalysisRepo;
 import com.example.repository.SubmissionRepo;
@@ -40,7 +37,7 @@ import java.lang.*;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.model.Submission;
+import com.example.model.Analysis;
 
 @Service
 public class AnalysisServiceImpl implements AnalysisService {
@@ -74,7 +71,7 @@ public class AnalysisServiceImpl implements AnalysisService {
     }
 
     @Override
-    public List<String> addFeedbackToAnalysis(Long analysisId, String feedback) {
+    public List<FeedbackHistory> addFeedbackToAnalysis(Long analysisId, String feedback) {
         // Retrieve the analysis with its associated feedback
         Analysis analysis = analysisRepo.findById(analysisId)
             .orElseThrow(() -> new IllegalArgumentException("Analysis with ID " + analysisId + " not found"));
@@ -86,7 +83,7 @@ public class AnalysisServiceImpl implements AnalysisService {
     }
 
     @Override
-    public String createAnalysisSummary(Long analysisId, List<String> allFeedbacks) {
+    public String createAnalysisSummary(Long analysisId, List<FeedbackHistory> allFeedbacks) {
         // Retrieve the analysis with its associated feedback
         Analysis analysis = analysisRepo.findById(analysisId)
             .orElseThrow(() -> new IllegalArgumentException("Analysis with ID " + analysisId + " not found"));
@@ -96,31 +93,33 @@ public class AnalysisServiceImpl implements AnalysisService {
         //      store feedback as initial summary
         String summary = analysis.getSummary();
         if (summary.isEmpty()) {
-            String onlyFeedback = allFeedbacks.get(0);
-            summary = analysis.setSummary(onlyFeedback);
+            summary = allFeedbacks.get(0).getFeedback();
+            analysis.setSummary(summary);
         } else {
             // if have:
             //      get summary & all feedback and send to chatGPT
             //      update the summary in Analysis object to whats returned
             
             // Combine all feedback into a summary string
-            String feedbackSummary = "\n\n'Additional Feedback from Analysis History:'\n" + String.join("\n- ", allFeedbacks);
+            String feedbackSummary = "\n\n'Additional Feedback from Analysis History:'\n";
+            for (FeedbackHistory f : allFeedbacks) {
+                feedbackSummary += "\n- " + f.getFeedback(); 
+            }
         
             String inputMessage = summary + """
                 \n\nUpdate the old summary of the student's learning above
                     based on the feedback from ALL of the student's past assignments,
-                    the feedback of ALL the student's past assignment is stored below
+                    the feedback of ALL the student's past assignment is stored below in
                     'Additional Feedback from Analysis History'. Also provide additional comments
                     where needed on: \n
                     - areas for improvement \n
                     - how to improve or practice \n
                     - what was done well \n
-                    \n\n
-                    Return ONLY the updated summary
-            """ ;
+                    Return ONLY the updated summary \n\n
+            """ + feedbackSummary;
         
             // Create a UserMessage including all media objects
-            var userMessage = new UserMessage(inputMessage, feedbackSummary);
+            var userMessage = new UserMessage(inputMessage);
             
             // Build a Prompt and call the OpenAI API
             var prompt = new Prompt(List.of(userMessage));

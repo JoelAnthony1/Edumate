@@ -1,7 +1,7 @@
 package com.example.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.example.model.MarkingRubric;
+import com.example.model.Analysis;
 import org.springframework.stereotype.Repository;
 
 @Repository

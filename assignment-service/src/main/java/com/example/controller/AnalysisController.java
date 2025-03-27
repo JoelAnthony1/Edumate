@@ -28,8 +28,8 @@ public class AnalysisController {
     private final AnalysisService analysisService;
 
     @Autowired
-    public AnalysisController(SubmissionService submissionService) {
-        this.submissionService = submissionService;
+    public AnalysisController(AnalysisService analysisService) {
+        this.analysisService = analysisService;
     }
 
     // Create a new analysis
