@@ -162,6 +162,7 @@ public class SubmissionServiceImpl implements SubmissionService {
         // Build a Prompt and call the OpenAI API
         var prompt = new Prompt(List.of(userMessage));
 
+        // calling ChatGPT
         var responseSpec = chatClient
             .prompt(prompt)
             .options(OpenAiChatOptions.builder().build())
@@ -203,6 +204,12 @@ public class SubmissionServiceImpl implements SubmissionService {
             .call();
         
         String feedback = responseSpec.chatResponse().getResult().getOutput().getText();
+        // add feedback to Analysis object
+
+        // update Summary for latest feedback
+
+
+
         submission.setFeedback(feedback);
         
         return submissionRepo.save(submission);

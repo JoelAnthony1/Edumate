@@ -9,6 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.model.Submission;
 
 public interface AnalysisService {
-    List<String> addFeedbackToAnalysis(String feedback);
+    List<String> addFeedbackToAnalysis(Long analysisId, String feedback);
     String createAnalysisSummary(); 
 }
