@@ -10,5 +10,5 @@ import com.example.model.Submission;
 
 public interface AnalysisService {
     List<String> addFeedbackToAnalysis(Long analysisId, String feedback);
-    String createAnalysisSummary(); 
+    String createAnalysisSummary(Long analysisId, List<String> allFeedbacks); 
 }

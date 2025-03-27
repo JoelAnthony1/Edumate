@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.lang.*;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -64,54 +65,58 @@ public class AnalysisServiceImpl implements AnalysisService {
         return analysis.getFeedbackHistory();
     }
 
-    public String createAnalysisSummary() {
+    public String createAnalysisSummary(Long analysisId, List<String> allFeedbacks) {
+        // Retrieve the analysis with its associated feedback
+        Analysis analysis = analysisRepo.findById(analysisId)
+            .orElseThrow(() -> new IllegalArgumentException("Analysis with ID " + analysisId + " not found"));
+
         // check if Analysis object has summary
-        // if have:
-        //      get summary and send to chatGPT
-        //      update the summary in Analysis object to whats returned
-
-        // Convert each image's byte[] into a Media object
-        List<Media> mediaList = images.stream()
-            .map(img -> new Media(MimeTypeUtils.IMAGE_PNG, new ByteArrayResource(img.getImageData())))
-            .collect(Collectors.toList());
-
-        String inputMessage = """
-            Extract all mathematical equations, transformations, and solutions in a structured text format that is optimized for machine readability. Ensure that:
-            - Fractions are written using `/` (e.g., `5/3`).
-            - Mixed fractions (e.g., `2 3/4`) should be written explicitly with spaces and not interpreted as exponentiation.
-            - Absolute values are represented as `|x|`.
-            - Square roots are written as `sqrt(x)`.
-            - Powers are written using `^` (e.g., `x^2`).
-            - Parentheses are **preserved exactly** as in the original image to ensure correct grouping.
-            - Inequalities and equalities (`=`, `<`, `>`, `<=`, `>=`) are **accurately captured**.
-            - Greek letters (`π`, `θ`, etc.) should be **preserved correctly**.
-            - Trigonometric functions and inverse functions are preserved **without modification** (e.g., `sin^-1(x)`, `tan(θ)`).
-            - Vertical fractions or summations should be structured correctly (e.g., `a/b` for fractions).
-            - Multi-line equations should **maintain correct line breaks** and **should not be merged** into a single line.
-            - Minus signs (`-`) must be **extracted correctly** and **not replaced** with Unicode variations.
-            - No extra explanatory text or formatting is added—**only extract exactly what is present in the image**.
-        """;
-
-        // Create a UserMessage including all media objects
-        var userMessage = new UserMessage(inputMessage, mediaList);
-
-        // Build a Prompt and call the OpenAI API
-        var prompt = new Prompt(List.of(userMessage));
-
-        // calling ChatGPT
-        var responseSpec = chatClient
-            .prompt(prompt)
-            .options(OpenAiChatOptions.builder().build())
-            .call();
-        var chatResponse = responseSpec.chatResponse();
-        String extractedAnswer = chatResponse.getResult().getOutput().getText();
-
-        // Save the extracted answer into the submission's writtenAnswer field and persist
-        submission.setWrittenAnswer(extractedAnswer);
-        return submissionRepo.save(submission);
-
         // if dun have:
         //      store feedback as initial summary
+        String summary = analysis.getSummary();
+        if (summary.isEmpty()) {
+            String onlyFeedback = allFeedbacks.get(0);
+            summary = analysis.setSummary(onlyFeedback);
+        } else {
+            // if have:
+            //      get summary & all feedback and send to chatGPT
+            //      update the summary in Analysis object to whats returned
+            
+            // Combine all feedback into a summary string
+            String feedbackSummary = "\n\n'Additional Feedback from Analysis History:'\n" + String.join("\n- ", allFeedbacks);
+        
+            String inputMessage = summary + """
+                \n\nUpdate the old summary of the student's learning above
+                    based on the feedback from ALL of the student's past assignments,
+                    the feedback of ALL the student's past assignment is stored below
+                    'Additional Feedback from Analysis History'. Also provide additional comments
+                    where needed on: \n
+                    - areas for improvement \n
+                    - how to improve or practice \n
+                    - what was done well \n
+                    \n\n
+                    Return ONLY the updated summary
+            """ ;
+        
+            // Create a UserMessage including all media objects
+            var userMessage = new UserMessage(inputMessage, feedbackSummary);
+            
+            // Build a Prompt and call the OpenAI API
+            var prompt = new Prompt(List.of(userMessage));
+            
+            // calling ChatGPT
+            var responseSpec = chatClient
+                .prompt(prompt)
+                .options(OpenAiChatOptions.builder().build())
+                .call();
+            var chatResponse = responseSpec.chatResponse();
+            String extractedAnswer = chatResponse.getResult().getOutput().getText();
+            summary = extractedAnswer;
+
+            // Save the extracted answer into the analysis's Summary field and persist
+            analysis.setSummary(extractedAnswer);
+            analysisRepo.save(analysis);
+        }
 
         return summary;
     }

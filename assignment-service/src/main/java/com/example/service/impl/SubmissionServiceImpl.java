@@ -1,6 +1,6 @@
 package com.example.service.impl;
 
-import com.example.service.SubmissionService;
+import com.example.service.*;
 import com.example.model.MarkingRubric;
 import com.example.model.MarkingRubricImage;
 import com.example.model.Submission;
@@ -41,6 +41,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     private final SubmissionRepo submissionRepo;
     private final ChatClient chatClient;
+    private final AnalysisServiceImpl analysisServiceImpl;
 
     @Autowired
     public SubmissionServiceImpl(SubmissionRepo submissionRepo, ChatClient chatClient) {
@@ -177,7 +178,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     @Transactional
-    public Submission gradeSubmission(Long submissionId) {
+    public Submission gradeSubmission(Long submissionId, Long analysisId) {
         // Retrieve the submission with its associated rubric
         Submission submission = submissionRepo.findById(submissionId)
             .orElseThrow(() -> new IllegalArgumentException("Submission with ID " + submissionId + " not found"));
@@ -205,9 +206,9 @@ public class SubmissionServiceImpl implements SubmissionService {
         
         String feedback = responseSpec.chatResponse().getResult().getOutput().getText();
         // add feedback to Analysis object
-
+        List<String> allFeedbacks = analysisServiceImpl.addFeedbackToAnalysis(feedback);
         // update Summary for latest feedback
-
+        analysisServiceImpl.createAnalysisSummary(allFeedbacks);
 
 
         submission.setFeedback(feedback);

@@ -108,10 +108,10 @@ public class SubmissionController {
         }
     }
 
-    @PutMapping("/{submissionId}/grade")
-    public ResponseEntity<Submission> gradeSubmission(@PathVariable Long submissionId) {
+    @PutMapping("/{submissionId}/grade/{analysisId}")
+    public ResponseEntity<Submission> gradeSubmission(@PathVariable Long submissionId, @PathVariable Long analysisId) {
         try {
-            Submission gradedSubmission = submissionService.gradeSubmission(submissionId);
+            Submission gradedSubmission = submissionService.gradeSubmission(submissionId, analysisId);
             return ResponseEntity.ok(gradedSubmission);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
