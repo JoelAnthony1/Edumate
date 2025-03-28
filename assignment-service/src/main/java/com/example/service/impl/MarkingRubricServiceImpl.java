@@ -82,6 +82,28 @@ public class MarkingRubricServiceImpl implements MarkingRubricService {
     }
 
     @Override
+    @Transactional
+    public MarkingRubric addQuestionImagesToRubric(Long rubricId, List<MultipartFile> questionImages) throws IOException {
+        Optional<MarkingRubric> optionalRubric = markingRubricRepo.findById(rubricId);
+        if (optionalRubric.isEmpty()) {
+            throw new IllegalArgumentException("MarkingRubric with ID " + rubricId + " not found");
+        }
+        MarkingRubric rubric = optionalRubric.get();
+
+        if (rubric.getQuestionImages() == null) {
+            rubric.setQuestionImages(new ArrayList<>());
+        }
+
+        for (MultipartFile image : questionImages) {
+            MarkingRubricImage questionImage = new MarkingRubricImage();
+            questionImage.setImageData(image.getBytes());
+            questionImage.setRubric(rubric);
+            rubric.getQuestionImages().add(questionImage);
+        }
+        return markingRubricRepo.save(rubric);
+    }
+
+    @Override
     public MarkingRubric getMarkingRubricById(Long rubricId) {
         return markingRubricRepo.findById(rubricId)
             .orElseThrow(() -> new IllegalArgumentException("MarkingRubric with ID " + rubricId + " not found"));
@@ -119,20 +141,14 @@ public class MarkingRubricServiceImpl implements MarkingRubricService {
             .collect(Collectors.toList());
         
         String inputMessage = """
-            Extract all mathematical equations, transformations, and solutions in a structured text format that is optimized for machine readability. Ensure that:
-            - Fractions are written using `/` (e.g., `5/3`).
-            - Mixed fractions (e.g., `2 3/4`) should be written explicitly with spaces and not interpreted as exponentiation.
-            - Absolute values are represented as `|x|`.
-            - Square roots are written as `sqrt(x)`.
-            - Powers are written using `^` (e.g., `x^2`).
-            - Parentheses are **preserved exactly** as in the original image to ensure correct grouping.
-            - Inequalities and equalities (`=`, `<`, `>`, `<=`, `>=`) are **accurately captured**.
-            - Greek letters (`π`, `θ`, etc.) should be **preserved correctly**.
-            - Trigonometric functions and inverse functions are preserved **without modification** (e.g., `sin^-1(x)`, `tan(θ)`).
-            - Vertical fractions or summations should be structured correctly (e.g., `a/b` for fractions).
-            - Multi-line equations should **maintain correct line breaks** and **should not be merged** into a single line.
-            - Minus signs (`-`) must be **extracted correctly** and **not replaced** with Unicode variations.
-            - No extra explanatory text or formatting is added—**only extract exactly what is present in the image**.
+            Extract all questions and answers in a structured text format optimized for machine readability.
+            Format the output in Q&A pairs, where each question starts with "Question Number:" followed by the question number and text, and each answer starts with "Answer:" followed by the answer.
+
+            For example:
+            Question Number: 2)a)
+            Answer: Normal contact force by the right support on the plank.
+
+            Extract only the content present in the image without additional commentary.
         """;
 
         // Create a UserMessage including all media objects
@@ -148,10 +164,71 @@ public class MarkingRubricServiceImpl implements MarkingRubricService {
         var chatResponse = responseSpec.chatResponse();
         String extractedAnswer = chatResponse.getResult().getOutput().getText();
         
-        // Save the extracted answer into the rubric's gradingCriteria and persist
+        //store extracted answer in GradingCriteria
         rubric.setGradingCriteria(extractedAnswer);
-        return markingRubricRepo.save(rubric);
 
+        // save and persist
+        return markingRubricRepo.save(rubric);
+    }
+
+    @Override
+    @Transactional
+    public MarkingRubric extractQuestionsFromPNG(Long rubricId) throws IOException {
+        // Retrieve the rubric by ID
+        MarkingRubric rubric = markingRubricRepo.findById(rubricId)
+        .orElseThrow(() -> new IllegalArgumentException("MarkingRubric with ID " + rubricId + " not found"));
+        
+        //get images from marking_rubric
+        List<MarkingRubricImage> images = rubric.getQuestionImages();
+        if (images.isEmpty()) {
+            throw new IllegalArgumentException("No question images found for rubric ID " + rubricId);
+        }
+
+        // Convert each image's byte[] into a Media object
+        List<Media> mediaList = images.stream()
+            .map(img -> new Media(MimeTypeUtils.IMAGE_PNG, new ByteArrayResource(img.getImageData())))
+            .collect(Collectors.toList());
+
+        // Extract only the questions from the image
+        String questionPrompt = """
+            Extract only the questions from the provided image in a structured text format optimized for machine readability.
+            Format the output as follows:
+            Question Number: [Question number as it appears in the image]
+            Question: [Question text as it appears in the image]
+            
+            For example:
+            Question Number: 1)i)
+            Question: Show that 4|4𝑥 − 6| − 2|9 − 6𝑥| = 𝑘|2𝑥 − 3|, where k is a constant
+            
+            Ensure that:
+            - Fractions are written using `/` (e.g., `5/3`).
+            - Mixed fractions (e.g., `2 3/4`) should be written explicitly with spaces.
+            - Absolute values are represented as `|x|`.
+            - Square roots are written as `sqrt(x)`.
+            - Powers are written using `^` (e.g., `x^2`).
+            - Parentheses are preserved exactly.
+            - Inequalities and equalities (`=`, `<`, `>`, `<=`, `>=`) are captured accurately.
+            - Greek letters and trigonometric functions remain unchanged.
+            - Multi-line equations maintain correct line breaks.
+            - Minus signs are extracted correctly.
+            Extract only the question text as it appears in the image without additional commentary.
+        """;
+
+        var questionUserMessage = new UserMessage(questionPrompt, mediaList);
+        var questionPromptObj = new Prompt(List.of(questionUserMessage));
+
+        var questionResponseSpec = chatClient
+            .prompt(questionPromptObj)  
+            .options(OpenAiChatOptions.builder().build())
+            .call();
+
+        var questionChatResponse = questionResponseSpec.chatResponse();
+        String extractedQuestions = questionChatResponse.getResult().getOutput().getText();
+
+        // Store extracted questions into the questions
+        rubric.setQuestions(extractedQuestions);
+
+        return markingRubricRepo.save(rubric);
     }
 
     @Override
@@ -199,56 +276,50 @@ public class MarkingRubricServiceImpl implements MarkingRubricService {
         return markingRubricRepo.save(rubric);
     }
 
-    // @Override
-    // @Transactional
-    // public MarkingRubric extractAnswersFromPDF(Long rubricId) throws IOException {
-    //     MarkingRubric rubric = markingRubricRepo.findById(rubricId)
-    //         .orElseThrow(() -> new IllegalArgumentException("MarkingRubric with ID " + rubricId + " not found"));
+    @Override
+    @Transactional
+    public MarkingRubric addDocumentToQuestion(Long rubricId, MultipartFile document) throws IOException {
+        Optional<MarkingRubric> optionalRubric = markingRubricRepo.findById(rubricId);
+        if (optionalRubric.isEmpty()) {
+            throw new IllegalArgumentException("MarkingRubric with ID " + rubricId + " not found");
+        }
+        MarkingRubric rubric = optionalRubric.get();
+        if (rubric.getQuestionImages() == null) {
+            rubric.setQuestionImages(new ArrayList<>());
+        }
 
-    //     List<MarkingRubricImage> pdfDocuments = rubric.getImages().stream()
-    //         .filter(doc -> "application/pdf".equals(doc.getFileType()))
-    //         .collect(Collectors.toList());
+        // Load the PDF document using PDFBox
+        try (PDDocument pdfDoc = PDDocument.load(document.getInputStream())) {
+            PDFRenderer pdfRenderer = new PDFRenderer(pdfDoc);
+            for (int page = 0; page < pdfDoc.getNumberOfPages(); page++) {
+                BufferedImage bim = pdfRenderer.renderImageWithDPI(page, 100);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ImageIO.write(bim, "png", baos);
+                byte[] pngData = baos.toByteArray();
 
-    //     if (pdfDocuments.isEmpty()) {
-    //         throw new IllegalArgumentException("No PDF documents found for rubric ID " + rubricId);
-    //     }
+                MarkingRubricImage rubricImage = new MarkingRubricImage();
+                rubricImage.setImageData(pngData);
+                rubricImage.setRubric(rubric);
+                rubric.getQuestionImages().add(rubricImage);
+            }
+        }
 
+        return markingRubricRepo.save(rubric);
+    }
 
+    @Override
+    @Transactional
+    public MarkingRubric addStudentToRubric(Long rubricId, long studentId) {
+        MarkingRubric rubric = markingRubricRepo.findById(rubricId)
+            .orElseThrow(() -> new IllegalArgumentException("MarkingRubric with ID " + rubricId + " not found"));
+        rubric.addStudentToRubric(studentId);
+        return markingRubricRepo.save(rubric);
+    }
 
-    //     List<Media> mediaList = pdfDocuments.stream()
-    //         .map(img -> Media.builder()
-    //             .resource(new ByteArrayResource(img.getImageData()))
-    //             .contentType(MimeTypeUtils.IMAGE_PNG.toString())
-    //             .fileName("image.png")
-    //             .build())
-    //         .collect(Collectors.toList());
-
-    //     String inputMessage = """
-    //         Extract all mathematical equations, transformations, and solutions from the provided PDF documents in a structured text format optimized for machine readability. Follow these formatting rules:
-    //         - Use '/' for fractions (e.g., '5/3').
-    //         - Preserve mixed fractions with spaces (e.g., '2 3/4').
-    //         - Represent absolute values as '|x|'.
-    //         - Use 'sqrt(x)' for square roots.
-    //         - Denote powers using '^' (e.g., 'x^2').
-    //         - Maintain original parentheses for proper grouping.
-    //         - Accurately capture inequalities and equalities.
-    //         - Preserve Greek letters and trigonometric functions without changes.
-    //         - Keep multi-line equations with correct line breaks.
-    //         - Extract only the content present in the PDF without extra commentary.
-    //     """;
-
-    //     var userMessage = new UserMessage(inputMessage, mediaList);
-    //     var prompt = new Prompt(List.of(userMessage));
-    //     var responseSpec = chatClient
-    //         .prompt(prompt)
-    //         .options(OpenAiChatOptions.builder().build())
-    //         .call();
-    //     var chatResponse = responseSpec.chatResponse();
-    //     String extractedAnswer = chatResponse.getResult().getOutput().getText();
-
-    //     rubric.setGradingCriteria(extractedAnswer);
-    //     return markingRubricRepo.save(rubric);
-    // }
+    @Override
+    public List<MarkingRubric> getRubricsByStudentAndClass(Long studentId, Long classroomId) {
+        return markingRubricRepo.findByClassroomIdAndStudentId(classroomId, studentId);
+    }
 
 
 }

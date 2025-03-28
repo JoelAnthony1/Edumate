@@ -67,6 +67,20 @@ public class MarkingRubricController {
         }
     }
 
+    @PutMapping("/{rubricId}/upload-question-images")
+    public ResponseEntity<MarkingRubric> uploadQuestionImagesToRubric(@PathVariable Long rubricId,
+                                                                    @RequestParam("questionImages") List<MultipartFile> questionImages) {
+        try {
+            MarkingRubric updatedRubric = markingRubricService.addQuestionImagesToRubric(rubricId, questionImages);
+            return ResponseEntity.ok(updatedRubric);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(null);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+
     @GetMapping("/{rubricId}")
     public ResponseEntity<MarkingRubric> getMarkingRubric(@PathVariable Long rubricId) {
         try {
@@ -97,6 +111,18 @@ public class MarkingRubricController {
         }
     }
 
+    @PutMapping("/{rubricId}/extract-question-png")
+    public ResponseEntity<MarkingRubric> extractQuestionsFromPNG(@PathVariable Long rubricId) {
+        try {
+            MarkingRubric updatedRubric = markingRubricService.extractQuestionsFromPNG(rubricId);
+            return ResponseEntity.ok(updatedRubric);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(null);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
     @PutMapping("/{rubricId}/upload-documents")
     public ResponseEntity<MarkingRubric> uploadDocumentToRubric(@PathVariable Long rubricId,
                                                                   @RequestParam("document") MultipartFile document) {
@@ -110,7 +136,25 @@ public class MarkingRubricController {
         }
     }
 
+    @PostMapping("/{rubricId}/add-student")
+    public ResponseEntity<MarkingRubric> addStudentToRubric(@PathVariable Long rubricId,
+                                                               @RequestParam("studentId") long studentId) {
+        try {
+            MarkingRubric updatedRubric = markingRubricService.addStudentToRubric(rubricId, studentId);
+            return ResponseEntity.ok(updatedRubric);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 
+    @GetMapping("/MR-for-student-and-class")
+    public ResponseEntity<List<MarkingRubric>> getRubricsByStudentAndClass(
+        @RequestParam Long studentId,
+        @RequestParam Long classroomId
+    ) {
+        List<MarkingRubric> rubrics = markingRubricService.getRubricsByStudentAndClass(studentId, classroomId);
+        return ResponseEntity.ok(rubrics);
+    }
 
 
 }
