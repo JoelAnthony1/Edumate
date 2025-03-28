@@ -120,7 +120,25 @@ public class SubmissionController {
         }
     }
 
+    @PutMapping("/{submissionId}/mark-submitted")
+    public ResponseEntity<Submission> markSubmissionAsSubmitted(@PathVariable Long submissionId) {
+        try {
+            Submission updatedSubmission = submissionService.markAsSubmitted(submissionId);
+            return ResponseEntity.ok(updatedSubmission);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 
+    @PutMapping("/{submissionId}/mark-graded")
+    public ResponseEntity<Submission> markSubmissionAsGraded(@PathVariable Long submissionId) {
+        try {
+            Submission updatedSubmission = submissionService.markAsGraded(submissionId);
+            return ResponseEntity.ok(updatedSubmission);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 
 
 }

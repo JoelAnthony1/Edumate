@@ -140,20 +140,14 @@ public class SubmissionServiceImpl implements SubmissionService {
             .collect(Collectors.toList());
 
         String inputMessage = """
-            Extract all mathematical equations, transformations, and solutions in a structured text format that is optimized for machine readability. Ensure that:
-            - Fractions are written using `/` (e.g., `5/3`).
-            - Mixed fractions (e.g., `2 3/4`) should be written explicitly with spaces and not interpreted as exponentiation.
-            - Absolute values are represented as `|x|`.
-            - Square roots are written as `sqrt(x)`.
-            - Powers are written using `^` (e.g., `x^2`).
-            - Parentheses are **preserved exactly** as in the original image to ensure correct grouping.
-            - Inequalities and equalities (`=`, `<`, `>`, `<=`, `>=`) are **accurately captured**.
-            - Greek letters (`π`, `θ`, etc.) should be **preserved correctly**.
-            - Trigonometric functions and inverse functions are preserved **without modification** (e.g., `sin^-1(x)`, `tan(θ)`).
-            - Vertical fractions or summations should be structured correctly (e.g., `a/b` for fractions).
-            - Multi-line equations should **maintain correct line breaks** and **should not be merged** into a single line.
-            - Minus signs (`-`) must be **extracted correctly** and **not replaced** with Unicode variations.
-            - No extra explanatory text or formatting is added—**only extract exactly what is present in the image**.
+            Extract all questions number and the student's answers in a structured text format optimized for machine readability.
+            Format the output in Q&A pairs, where each question starts with "Question Number:" followed by the question number, and each answer starts with "Student Answer:" followed by the student's written answer.
+            
+            For example:
+            Question Number: 2)a)
+            Student Answer: Normal contact force by the right support on the plank.
+            
+            Extract only the content present in the image without additional commentary.
         """;
 
         // Create a UserMessage including all media objects
@@ -186,29 +180,51 @@ public class SubmissionServiceImpl implements SubmissionService {
             throw new IllegalArgumentException("Submission must have an associated MarkingRubric");
         }
         
-        // Combine grading criteria and the written answer into a grading prompt
+        // Retrieve the questions, grading criteria, and student's answer
+        String questions = submission.getMarkingRubric().getQuestions();
         String gradingCriteria = submission.getMarkingRubric().getGradingCriteria();
         String writtenAnswer = submission.getWrittenAnswer();
-        String promptText = String.format(
-            "Based on the following grading criteria: %s, evaluate the following submission: %s and provide detailed feedback.",
+        
+        // Build the detailed marking prompt for a question-by-question evaluation
+        String markingPromptText = String.format(
+            "Mark the student's submission strictly by referring to the provided grading criteria. For each question, compare the student's answer with the expected answer given in the grading criteria and provide brief marking comments only if the student's answer does not the criteria. Do not include any independent analysis, overall summary, or final mark.\n\n" +
+            "Grading Criteria:\n%s\n\n" +
+            "Student's Submission:\n%s\n\n" +
+            "Provide detailed feedback for each question only.",
             gradingCriteria, writtenAnswer);
         
-        // Create a user message and build the prompt
-        var userMessage = new UserMessage(promptText);
+        // Create a user message with the marking prompt and build the prompt object
+        var userMessage = new UserMessage(markingPromptText);
         var prompt = new Prompt(List.of(userMessage));
         
-        // Call the ChatGPT API using ChatClient
+        // Call the OpenAI API to get the feedback
         var responseSpec = chatClient.prompt(prompt)
-            .options(OpenAiChatOptions.builder().build())
+            .options(OpenAiChatOptions.builder().model("gpt-4").build())
             .call();
-        
         String feedback = responseSpec.chatResponse().getResult().getOutput().getText();
-        submission.setFeedback(feedback);
         
+        // Save the generated feedback in the submission and persist
+        submission.setFeedback(feedback);
         return submissionRepo.save(submission);
     }
 
+    @Override
+    @Transactional
+    public Submission markAsSubmitted(Long submissionId) {
+        Submission submission = submissionRepo.findById(submissionId)
+            .orElseThrow(() -> new IllegalArgumentException("Submission with ID " + submissionId + " not found"));
+        submission.setSubmitted(true);
+        return submissionRepo.save(submission);
+    }
 
+    @Override
+    @Transactional
+    public Submission markAsGraded(Long submissionId) {
+        Submission submission = submissionRepo.findById(submissionId)
+            .orElseThrow(() -> new IllegalArgumentException("Submission with ID " + submissionId + " not found"));
+        submission.setGraded(true);
+        return submissionRepo.save(submission);
+    }
 
 
 

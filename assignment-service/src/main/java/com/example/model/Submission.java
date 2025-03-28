@@ -23,6 +23,9 @@ public class Submission {
     @JoinColumn(name = "marking_rubric_id", nullable = false)
     private MarkingRubric markingRubric;
 
+    private Boolean submitted = false;
+    private Boolean graded = false;
+
     @Column(columnDefinition = "TEXT") // Use TEXT type to handle longer AI extracted answer
     private String writtenAnswer;
 

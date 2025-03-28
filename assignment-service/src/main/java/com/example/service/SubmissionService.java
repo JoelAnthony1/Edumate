@@ -17,4 +17,6 @@ public interface SubmissionService {
     Submission deleteImageFromSubmission(Long submissionId, Long imageId);
     Submission extractAnswersFromPNG(Long submissionId) throws IOException;
     Submission gradeSubmission(Long submissionId);
+    Submission markAsSubmitted(Long submissionId);
+    Submission markAsGraded(Long submissionId);
 }
