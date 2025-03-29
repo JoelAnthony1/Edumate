@@ -140,5 +140,18 @@ public class SubmissionController {
         }
     }
 
+    @GetMapping("/feedback")
+    public ResponseEntity<String> getFeedbackForStudentAndClassroomAndRubric(
+            @RequestParam Long studentId,
+            @RequestParam Long classroomId,
+            @RequestParam Long markingRubricId) {
+        try {
+            String feedback = submissionService.getFeedbackForStudentAndClassroomAndRubric(studentId, classroomId, markingRubricId);
+            return ResponseEntity.ok(feedback);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 
 }

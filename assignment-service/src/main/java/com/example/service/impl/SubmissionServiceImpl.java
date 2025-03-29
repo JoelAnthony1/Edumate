@@ -226,7 +226,12 @@ public class SubmissionServiceImpl implements SubmissionService {
         return submissionRepo.save(submission);
     }
 
-
-
+    @Override
+    public String getFeedbackForStudentAndClassroomAndRubric(Long studentId, Long classroomId, Long markingRubricId) {
+        Submission submission = submissionRepo.findByStudentIdAndClassroomIdAndMarkingRubricId(studentId, classroomId, markingRubricId)
+            .orElseThrow(() -> new IllegalArgumentException("Submission not found for studentId " + studentId 
+                 + ", classroomId " + classroomId + ", and markingRubricId " + markingRubricId));
+        return submission.getFeedback();
+    }
     
 }
