@@ -4,6 +4,7 @@ import java.util.*;
 import org.springframework.stereotype.Service;
 import com.example.classroomservice.student.*;
 import com.example.classroomservice.exception.*;
+import com.example.classroomservice.student.Student;
 
 @Service
 public class ClassroomServiceImpl implements ClassroomService {
@@ -13,6 +14,11 @@ public class ClassroomServiceImpl implements ClassroomService {
     public ClassroomServiceImpl(ClassroomRepository classroomRepository, StudentRepository studentRepository){
         this.classroomRepository=classroomRepository;
         this.studentRepository=studentRepository;
+    }
+
+    @Override
+    public Set<Student> getListOfStudents(Long id){
+        return classroomRepository.findStudentsByClassroomId(id);
     }
 
     @Override

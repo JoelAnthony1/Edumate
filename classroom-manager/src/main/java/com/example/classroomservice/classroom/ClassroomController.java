@@ -1,6 +1,6 @@
 package com.example.classroomservice.classroom;
 
-import java.util.List;
+import java.util.*;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.http.HttpStatus;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
+import com.example.classroomservice.student.Student;
 
 
 @RestController
@@ -26,12 +27,22 @@ public class ClassroomController {
 
     @ResponseBody
     @GetMapping("/classrooms")
-public List<Classroom> getAllClassrooms(@RequestParam(required = false) Long userId) {
+    public List<Classroom> getAllClassrooms(@RequestParam(required = false) Long userId) {
     if (userId == null) {
         throw new IllegalArgumentException("User ID is required");
     }
     return classroomService.findByUserId(userId);
 }
+
+    @ResponseBody
+    @GetMapping("/classrooms/{id}/students")
+    public Set<Student> getListOfStudents(@PathVariable Long id){
+        Set<Student> students = classroomService.getListOfStudents(id);
+        if (students == null){
+            throw new IllegalArgumentException("no students");
+        }
+        return students;
+    }
 
     @ResponseBody
     @GetMapping("/classrooms/{id}")
