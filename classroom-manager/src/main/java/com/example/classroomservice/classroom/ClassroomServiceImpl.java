@@ -23,7 +23,10 @@ public class ClassroomServiceImpl implements ClassroomService {
     public Classroom getClassroom(Long id) {
         return classroomRepository.findById(id).orElse(null); 
     }
-
+    @Override
+    public Set<Student> getListOfStudents(Long id){
+        return classroomRepository.findStudentsByClassroomId(id);
+    }
     @Override
     public Classroom addClassroom(Classroom classroom){
         return classroomRepository.save(classroom);
