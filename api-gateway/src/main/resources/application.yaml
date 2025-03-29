@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: user-route
+          uri: http://localhost:8081
+          predicates:
+            - Path=/users/**
+
+        - id: classroom-route
+          uri: http://localhost:8082
+          predicates:
+            - Path=/classrooms/**
+
+        - id: assignment-route
+          uri: http://localhost:8083
+          predicates:
+            - Path=/assignments/**
+
+      globalcors:
+        corsConfigurations:
+          "[/**]":
+            allowedOrigins: "http://localhost:3000" # Adjust based on your frontend
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            allowedHeaders: "*"
+            allowCredentials: true
+
+            # server.port=808X, ensure this line is in application.properties

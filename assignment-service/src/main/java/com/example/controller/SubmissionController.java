@@ -24,7 +24,7 @@ import com.example.service.SubmissionService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/submission")
+@RequestMapping("/submission")
 public class SubmissionController {
 
     private final SubmissionService submissionService;

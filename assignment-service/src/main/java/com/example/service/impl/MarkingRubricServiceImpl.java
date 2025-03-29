@@ -322,9 +322,8 @@ public class MarkingRubricServiceImpl implements MarkingRubricService {
     }
 
     @Override
-    public List<MarkingRubric> getRubricsByClassroom(Long classroomId) {
+    public List<MarkingRubric> getRubricsByClass(Long classroomId) {
         return markingRubricRepo.findByClassroomId(classroomId);
     }
-
 
 }

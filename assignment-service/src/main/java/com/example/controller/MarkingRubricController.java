@@ -22,7 +22,7 @@ import com.example.service.MarkingRubricService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/rubrics")
+@RequestMapping("/rubrics")
 public class MarkingRubricController {
 
     private final MarkingRubricService markingRubricService;
@@ -79,7 +79,6 @@ public class MarkingRubricController {
             return ResponseEntity.badRequest().body(null);
         }
     }
-
 
     @GetMapping("/{rubricId}")
     public ResponseEntity<MarkingRubric> getMarkingRubric(@PathVariable Long rubricId) {
@@ -162,6 +161,6 @@ public class MarkingRubricController {
         List<MarkingRubric> rubrics = markingRubricService.getRubricsByClassroom(classroomId);
         return ResponseEntity.ok(rubrics);
     }
-
+    
 
 }

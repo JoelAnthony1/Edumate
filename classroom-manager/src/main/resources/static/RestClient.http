@@ -1,0 +1,61 @@
+
+
+###
+DELETE http://localhost:8080/classrooms/1/students/2
+###
+POST http://localhost:8080/classrooms/1/students/2
+Content-Type: application/json
+
+###
+POST http://localhost:8080/classrooms
+Content-Type: application/json
+
+
+{
+    "classname": "Nickle",
+    "subject" : "Maths" ,
+    "description" : "Tuition centre"
+}
+
+###
+POST http://localhost:8080/classrooms/1/students
+Content-Type: application/json
+
+{
+    "studentName": "Jamie"
+}
+### GET students
+GET http://localhost:8080/students
+Content-Type: application/json
+
+###
+POST http://localhost:8080/students
+Content-Type: application/json
+
+
+{
+    "name": "Jamie"
+}
+
+### GET classrooms
+GET http://localhost:8080/classrooms/1
+Content-Type: application/json
+
+### GET classroom
+GET http://localhost:8080/classrooms/3
+Content-Type: application/json
+###
+PUT http://localhost:8080/classrooms/5
+Content-Type: application/json
+Authorization: Basic admin goodpassword
+
+{
+  "classname": "Group study",
+  "capacity": 10
+}
+
+###
+DELETE http://localhost:8080/students/1
+
+###
+DELETE http://localhost:8080/classrooms/1/students/lalas

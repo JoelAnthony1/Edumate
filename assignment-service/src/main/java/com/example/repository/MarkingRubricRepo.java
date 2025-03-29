@@ -15,7 +15,7 @@ public interface MarkingRubricRepo extends JpaRepository<MarkingRubric, Long>{
            "AND :studentId MEMBER OF m.studentIds")
        List<MarkingRubric> findByClassroomIdAndStudentId(@Param("classroomId") Long classroomId,
                                                       @Param("studentId") Long studentId);
-
-       List<MarkingRubric> findByClassroomId(Long classroomId);
-
+       @Query("SELECT m FROM MarkingRubric m " +
+           "WHERE m.classroomId = :classroomId ")
+    List<MarkingRubric> findByClassroomId(@Param("classroomId") Long classroomId);
 }
