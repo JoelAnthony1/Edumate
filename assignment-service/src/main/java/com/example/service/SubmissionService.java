@@ -16,7 +16,7 @@ public interface SubmissionService {
     byte[] getImageData(Long submissionId, Long imageId);
     Submission deleteImageFromSubmission(Long submissionId, Long imageId);
     Submission extractAnswersFromPNG(Long submissionId) throws IOException;
-    Submission gradeSubmission(Long submissionId);
+    Submission gradeSubmission(Long submissionId, Long analysisId);
     Submission markAsSubmitted(Long submissionId);
     Submission markAsGraded(Long submissionId);
     String getFeedbackForStudentAndClassroomAndRubric(Long studentId, Long classroomId, Long markingRubricId);
