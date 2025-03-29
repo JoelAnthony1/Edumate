@@ -146,22 +146,21 @@ public class MarkingRubricController {
         }
     }
 
-    @GetMapping("/classrooms/{classroomId}")
-    public ResponseEntity<List<MarkingRubric>> getRubricsByClass(
-        @PathVariable Long classroomId) {
-        List<MarkingRubric> rubrics = markingRubricService.getRubricsByClass(classroomId);
-        return ResponseEntity.ok(rubrics);
-    }
-
-    // Get rubrics by student AND classroom
-    @GetMapping("/students/{studentId}/classrooms/{classroomId}")
+    @GetMapping("/MR-for-student-and-class")
     public ResponseEntity<List<MarkingRubric>> getRubricsByStudentAndClass(
-        @PathVariable Long studentId,
-        @PathVariable Long classroomId) {
+        @RequestParam Long studentId,
+        @RequestParam Long classroomId
+    ) {
         List<MarkingRubric> rubrics = markingRubricService.getRubricsByStudentAndClass(studentId, classroomId);
         return ResponseEntity.ok(rubrics);
     }
 
-
+    // Added
+    @GetMapping("/MR-for-classroom")
+    public ResponseEntity<List<MarkingRubric>> getRubricsByClassroom(@RequestParam Long classroomId) {
+        List<MarkingRubric> rubrics = markingRubricService.getRubricsByClassroom(classroomId);
+        return ResponseEntity.ok(rubrics);
+    }
+    
 
 }
