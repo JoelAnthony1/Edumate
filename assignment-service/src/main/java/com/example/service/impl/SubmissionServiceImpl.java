@@ -1,10 +1,7 @@
 package com.example.service.impl;
 
-import com.example.service.SubmissionService;
-import com.example.model.MarkingRubric;
-import com.example.model.MarkingRubricImage;
-import com.example.model.Submission;
-import com.example.model.SubmissionImage;
+import com.example.service.*;
+import com.example.model.*;
 import com.example.repository.MarkingRubricRepo;
 import com.example.repository.SubmissionRepo;
 import com.example.service.MarkingRubricService;
@@ -41,11 +38,13 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     private final SubmissionRepo submissionRepo;
     private final ChatClient chatClient;
+    private final AnalysisService analysisService;
 
     @Autowired
-    public SubmissionServiceImpl(SubmissionRepo submissionRepo, ChatClient chatClient) {
+    public SubmissionServiceImpl(SubmissionRepo submissionRepo, ChatClient chatClient, AnalysisService analysisService) {
         this.submissionRepo = submissionRepo;
         this.chatClient = chatClient;
+        this.analysisService = analysisService;
     }
 
     @Override
@@ -156,6 +155,7 @@ public class SubmissionServiceImpl implements SubmissionService {
         // Build a Prompt and call the OpenAI API
         var prompt = new Prompt(List.of(userMessage));
 
+        // calling ChatGPT
         var responseSpec = chatClient
             .prompt(prompt)
             .options(OpenAiChatOptions.builder().build())
@@ -170,7 +170,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     @Transactional
-    public Submission gradeSubmission(Long submissionId) {
+    public Submission gradeSubmission(Long submissionId, Long analysisId) {
         // Retrieve the submission with its associated rubric
         Submission submission = submissionRepo.findById(submissionId)
             .orElseThrow(() -> new IllegalArgumentException("Submission with ID " + submissionId + " not found"));
@@ -202,8 +202,12 @@ public class SubmissionServiceImpl implements SubmissionService {
             .options(OpenAiChatOptions.builder().model("gpt-4").build())
             .call();
         String feedback = responseSpec.chatResponse().getResult().getOutput().getText();
-        
-        // Save the generated feedback in the submission and persist
+        // add feedback to Analysis object
+        List<FeedbackHistory> allFeedbacks = analysisService.addFeedbackToAnalysis(analysisId, feedback);
+        // update Summary for latest feedback
+        analysisService.createAnalysisSummary(analysisId, allFeedbacks);
+
+
         submission.setFeedback(feedback);
         return submissionRepo.save(submission);
     }
