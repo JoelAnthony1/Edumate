@@ -10,10 +10,10 @@ import java.util.List;
 @Repository
 public interface MarkingRubricRepo extends JpaRepository<MarkingRubric, Long>{
 
-    @Query("SELECT m FROM MarkingRubric m " +
+       @Query("SELECT m FROM MarkingRubric m " +
            "WHERE m.classroomId = :classroomId " +
            "AND :studentId MEMBER OF m.studentIds")
-    List<MarkingRubric> findByClassroomIdAndStudentId(@Param("classroomId") Long classroomId,
+       List<MarkingRubric> findByClassroomIdAndStudentId(@Param("classroomId") Long classroomId,
                                                       @Param("studentId") Long studentId);
        @Query("SELECT m FROM MarkingRubric m " +
            "WHERE m.classroomId = :classroomId ")
