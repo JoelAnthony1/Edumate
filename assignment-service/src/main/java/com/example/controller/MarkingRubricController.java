@@ -156,5 +156,11 @@ public class MarkingRubricController {
         return ResponseEntity.ok(rubrics);
     }
 
+    @GetMapping("/MR-for-classroom")
+    public ResponseEntity<List<MarkingRubric>> getRubricsByClassroom(@RequestParam Long classroomId) {
+        List<MarkingRubric> rubrics = markingRubricService.getRubricsByClassroom(classroomId);
+        return ResponseEntity.ok(rubrics);
+    }
+
 
 }
