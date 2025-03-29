@@ -20,5 +20,5 @@ public interface MarkingRubricService {
     MarkingRubric addDocumentToQuestion(Long rubricId, MultipartFile document) throws IOException;
     MarkingRubric addStudentToRubric(Long rubricId, long studentId);
     List<MarkingRubric> getRubricsByStudentAndClass(Long studentId, Long classroomId);
-    List<MarkingRubric> getRubricsByClass(Long classroomId);
+    List<MarkingRubric> getRubricsByClassroom(Long classroomId);
 }
