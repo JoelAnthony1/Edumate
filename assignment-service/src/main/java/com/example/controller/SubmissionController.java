@@ -24,7 +24,7 @@ import com.example.service.SubmissionService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/submission")
+@RequestMapping("/submissions")
 public class SubmissionController {
 
     private final SubmissionService submissionService;
@@ -58,7 +58,19 @@ public class SubmissionController {
             return ResponseEntity.notFound().build();
         }
     }
+    @GetMapping("/classrooms/{classroomId}/students/{studentId}")
+    public ResponseEntity<List<Submission>> getSubmissionsUsingClassIdAndStudentId(
+            @PathVariable Long classroomId,
+            @PathVariable Long studentId) {
 
+        List<Submission> submissions = submissionService.getSubmissionsByClassroomIdAndStudentId(classroomId, studentId);
+
+        if (submissions.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(submissions);
+    }
         /**
      * API Endpoint to upload multiple images for a specific Submission.
      * @param submissionId The ID of the Submission.
@@ -108,16 +120,16 @@ public class SubmissionController {
         }
     }
 
-    @PutMapping("/{submissionId}/grade")
-    public ResponseEntity<Submission> gradeSubmission(@PathVariable Long submissionId) {
+    @PutMapping("/{submissionId}/grade/{analysisId}")
+    public ResponseEntity<Submission> gradeSubmission(@PathVariable Long submissionId, @PathVariable Long analysisId) {
         try {
-            Submission gradedSubmission = submissionService.gradeSubmission(submissionId);
+            Submission gradedSubmission = submissionService.gradeSubmission(submissionId, analysisId);
             return ResponseEntity.ok(gradedSubmission);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(null);
-        }
+        } // catch (Exception e) {
+        //     return ResponseEntity.internalServerError().body(null);
+        // }
     }
 
     @PutMapping("/{submissionId}/mark-submitted")

@@ -1,7 +1,7 @@
 package com.example.classroomservice.classroom;
 
-import java.util.List;
-
+import java.util.*;
+// import javax.validation.constraints.Min;
 import org.springframework.stereotype.Controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import com.example.classroomservice.student.Student;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 public class ClassroomController {
@@ -40,6 +41,15 @@ public List<Classroom> getAllClassrooms(@RequestParam(required = false) Long use
         if (classroom == null)
             throw new ClassroomNotFoundException(id);
         return classroomService.getClassroom(id);
+    }
+
+    @GetMapping("/classrooms/{id}/students")
+    public Set<Student> getListOfStudents(@PathVariable Long id){
+        Set<Student> students = classroomService.getListOfStudents(id);
+        if (students == null){
+            throw new IllegalArgumentException("no students");
+        }
+        return students;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
