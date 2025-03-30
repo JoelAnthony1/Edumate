@@ -10,8 +10,10 @@ import com.example.model.*;
 
 public interface AnalysisService {
     // CRUD
+    
     Analysis createAnalysis(Analysis analysis);
     Optional<Analysis> getAnalysisById(Long id);
+    Optional<Analysis> getAnalysisByClassAndStudent(Long classId, Long studentId);
     void deleteAnalysis(Long id);
 
     List<FeedbackHistory> addFeedbackToAnalysis(Long analysisId, String feedback);

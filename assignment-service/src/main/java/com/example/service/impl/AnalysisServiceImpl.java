@@ -81,7 +81,10 @@ public class AnalysisServiceImpl implements AnalysisService {
 
         return analysis.getFeedbackHistory();
     }
-
+    @Override
+    public Optional<Analysis> getAnalysisByClassAndStudent(Long classId, Long studentId) {
+        return analysisRepo.findByClassIdAndStudentId(classId, studentId);
+    }
     @Override
     public String createAnalysisSummary(Long analysisId, List<FeedbackHistory> allFeedbacks) {
         // Retrieve the analysis with its associated feedback

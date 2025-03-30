@@ -24,7 +24,7 @@ import com.example.service.SubmissionService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/submission")
+@RequestMapping("/submissions")
 public class SubmissionController {
 
     private final SubmissionService submissionService;
@@ -58,7 +58,19 @@ public class SubmissionController {
             return ResponseEntity.notFound().build();
         }
     }
+    @GetMapping("/classrooms/{classroomId}/students/{studentId}")
+    public ResponseEntity<List<Submission>> getSubmissionsUsingClassIdAndStudentId(
+            @PathVariable Long classroomId,
+            @PathVariable Long studentId) {
 
+        List<Submission> submissions = submissionService.getSubmissionsByClassroomIdAndStudentId(classroomId, studentId);
+
+        if (submissions.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(submissions);
+    }
         /**
      * API Endpoint to upload multiple images for a specific Submission.
      * @param submissionId The ID of the Submission.

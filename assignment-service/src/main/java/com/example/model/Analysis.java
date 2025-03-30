@@ -15,9 +15,9 @@ public class Analysis {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increment for PostgreSQL
     private Long id;
-
+    @Column(name = "class_id")
     private Long classId;
-
+    @Column(name = "student_id")
     private Long studentId;
 
     // One-to-many relationship between Analysis and FeedbackHistory

@@ -56,7 +56,10 @@ public class SubmissionServiceImpl implements SubmissionService {
     public Optional<Submission> getSubmissionById(Long id) {
         return submissionRepo.findById(id);
     }
-
+    @Override
+    public List<Submission> getSubmissionsByClassroomIdAndStudentId(Long classroomId, Long studentId) {
+        return submissionRepo.findByClassroomIdAndStudentId(classroomId, studentId);
+    }
     @Override
     @Transactional
     public void deleteSubmission(Long id) {

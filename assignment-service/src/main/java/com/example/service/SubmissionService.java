@@ -20,4 +20,5 @@ public interface SubmissionService {
     Submission markAsSubmitted(Long submissionId);
     Submission markAsGraded(Long submissionId);
     String getFeedbackForStudentAndClassroomAndRubric(Long studentId, Long classroomId, Long markingRubricId);
+    List<Submission> getSubmissionsByClassroomIdAndStudentId(Long classroomId, Long studentId);
 }

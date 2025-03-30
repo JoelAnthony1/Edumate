@@ -22,7 +22,7 @@ import com.example.service.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/analysis")
+@RequestMapping("/analysis")
 public class AnalysisController {
 
     private final AnalysisService analysisService;
@@ -45,6 +45,14 @@ public class AnalysisController {
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/classrooms/{classroomId}/students/{studentId}")
+    public ResponseEntity<Analysis> getAnalysisByClassAndStudent(@PathVariable Long classroomId, @PathVariable Long studentId) {
+        return analysisService.getAnalysisByClassAndStudent(classroomId, studentId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
 
     // Delete a submission by ID
     @DeleteMapping("/{id}")
