@@ -157,8 +157,8 @@ public class MarkingRubricController {
 
     // Added
     @GetMapping("/classrooms/{classroomId}")
-    public ResponseEntity<List<MarkingRubric>> getRubricsByClass(@PathVariable Long classroomId) {
-        List<MarkingRubric> rubrics = markingRubricService.getRubricsByClass(classroomId);
+    public ResponseEntity<List<MarkingRubric>> getRubricsByClassroom(@PathVariable Long classroomId) {
+        List<MarkingRubric> rubrics = markingRubricService.getRubricsByClassroom(classroomId);
         return ResponseEntity.ok(rubrics);
     }
     
