@@ -45,7 +45,24 @@ public class ClassroomServiceImpl implements ClassroomService {
     public void deleteClassroom(Long id) {
         classroomRepository.deleteById(id);
     }
+    @Override
+    public Student getStudentFromClass(Long studentId, Long classroomId ) {
+        Optional<Classroom> classroomOpt = classroomRepository.findById(classroomId);
 
+        if(classroomOpt.isPresent()){
+            Classroom classroom = classroomOpt.get();
+            for (Student student : classroom.getStudents()){
+                if (student.getId().equals(studentId)){
+                    return student;
+                }
+            }
+            throw new IllegalArgumentException("Student not found in classroom");
+        }else {
+            throw new IllegalArgumentException("Classroom not found");
+        }
+    }
+
+    @Override
     public void assignStudentToClassroom(Long studentId, Long classroomId) {
         Optional<Student> student = studentRepository.findById(studentId);
         Optional<Classroom> classroom = classroomRepository.findById(classroomId);
@@ -58,6 +75,7 @@ public class ClassroomServiceImpl implements ClassroomService {
         }
     }
 
+    @Override
     public void removeStudentFromClassroom(Long studentId, Long classroomId) {
         Optional<Classroom> classroom = classroomRepository.findById(classroomId);
         if (classroom.isPresent()) {

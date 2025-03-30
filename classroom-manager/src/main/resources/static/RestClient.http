@@ -1,5 +1,6 @@
 
-
+GET http://localhost:8081/classrooms/3/students/5
+Content-Type: application/json
 ###
 DELETE http://localhost:8080/classrooms/1/students/2
 ###
@@ -25,7 +26,7 @@ Content-Type: application/json
     "studentName": "Jamie"
 }
 ### GET students
-GET http://localhost:8080/students
+GET http://localhost:8081/students
 Content-Type: application/json
 
 ###
@@ -38,7 +39,7 @@ Content-Type: application/json
 }
 
 ### GET classrooms
-GET http://localhost:8080/classrooms/1
+GET http://localhost:8081/classrooms?userId=1
 Content-Type: application/json
 
 ### GET classroom

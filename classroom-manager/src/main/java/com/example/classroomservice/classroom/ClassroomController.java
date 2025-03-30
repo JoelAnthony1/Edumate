@@ -90,4 +90,10 @@ public List<Classroom> getAllClassrooms(@RequestParam(required = false) Long use
     public void removeStudentFromClassroom(@PathVariable Long classroomId, @PathVariable Long studentId) {
         classroomService.removeStudentFromClassroom(studentId,classroomId);
     }
+
+    @ResponseBody
+    @GetMapping("/classrooms/{classroomId}/students/{studentId}")
+    public Student getStudentFromClass(@PathVariable Long classroomId, @PathVariable Long studentId) {
+        return classroomService.getStudentFromClass(studentId, classroomId);
+    }
 }

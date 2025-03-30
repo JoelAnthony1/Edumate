@@ -13,4 +13,5 @@ public interface ClassroomService {
     void deleteClassroom(Long id);
     void assignStudentToClassroom(Long studentId, Long classroomId);
     void removeStudentFromClassroom(Long studentId, Long classroomId);
+    Student getStudentFromClass(Long studentId, Long classroomId);
 }
