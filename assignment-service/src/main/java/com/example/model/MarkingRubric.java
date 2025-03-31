@@ -6,6 +6,7 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Data
 @Entity
@@ -31,7 +32,7 @@ public class MarkingRubric {
     private String gradingCriteria;
 
     @OneToMany(mappedBy = "rubric", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore  // Exclude images from JSON responses
+    @JsonManagedReference // Exclude images from JSON responses
     private List<MarkingRubricImage> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "rubric", cascade = CascadeType.ALL, orphanRemoval = true)

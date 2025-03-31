@@ -110,7 +110,7 @@ public class MarkingRubricServiceImpl implements MarkingRubricService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public byte[] getImageData(Long rubricId, Long imageId) {
         MarkingRubric rubric = markingRubricRepo.findById(rubricId)
             .orElseThrow(() -> new IllegalArgumentException("MarkingRubric with ID " + rubricId + " not found"));
@@ -118,7 +118,19 @@ public class MarkingRubricServiceImpl implements MarkingRubricService {
             .filter(img -> img.getId().equals(imageId))
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("Image with ID " + imageId + " not found"));
-        return image.getImageData();
+        // Force initialization of the blob within the transaction:
+        byte[] data = image.getImageData();
+        return data;
+    }  
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MarkingRubricImage> getImagesByRubricId(Long rubricId) {
+        MarkingRubric rubric = markingRubricRepo.findById(rubricId)
+            .orElseThrow(() -> new IllegalArgumentException("MarkingRubric with ID " + rubricId + " not found"));
+    // Force initialization of the images collection:
+        int size = rubric.getImages().size();
+        return rubric.getImages();
     }
 
     @Override
@@ -183,6 +195,7 @@ public class MarkingRubricServiceImpl implements MarkingRubricService {
         if (images.isEmpty()) {
             throw new IllegalArgumentException("No question images found for rubric ID " + rubricId);
         }
+
 
         // Convert each image's byte[] into a Media object
         List<Media> mediaList = images.stream()

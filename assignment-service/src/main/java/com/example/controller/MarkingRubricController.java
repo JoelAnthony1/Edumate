@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.MediaType;
+import com.example.dto.ImageMetaDTO;
+import java.util.stream.Collectors;
+
+
 
 import com.example.model.MarkingRubric;
 import com.example.model.MarkingRubricImage;
@@ -79,6 +83,19 @@ public class MarkingRubricController {
             return ResponseEntity.badRequest().body(null);
         }
     }
+
+    @GetMapping("/{rubricId}/image-metadata")
+    public ResponseEntity<List<ImageMetaDTO>> getImageMetadata(@PathVariable Long rubricId) {
+        List<MarkingRubricImage> images = markingRubricService.getImagesByRubricId(rubricId);
+        List<ImageMetaDTO> metadata = images.stream()
+            .map(img -> new ImageMetaDTO(
+                img.getId(),
+                "/rubrics/" + rubricId + "/images/" + img.getId()
+            ))
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(metadata);
+    }
+
 
     @GetMapping("/{rubricId}")
     public ResponseEntity<MarkingRubric> getMarkingRubric(@PathVariable Long rubricId) {

@@ -6,9 +6,12 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.model.MarkingRubric;
+import com.example.model.MarkingRubricImage;
+
 
 public interface MarkingRubricService {
     MarkingRubric createMarkingRubric(MarkingRubric markingRubric);
+    List<MarkingRubricImage> getImagesByRubricId(Long rubricId);
     MarkingRubric addImagesToRubric(Long rubricId, List<MultipartFile> images) throws IOException;
     MarkingRubric addQuestionImagesToRubric(Long rubricId, List<MultipartFile> questionImages) throws IOException;
     MarkingRubric getMarkingRubricById(Long rubricId);

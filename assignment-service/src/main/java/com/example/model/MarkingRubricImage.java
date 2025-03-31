@@ -17,7 +17,7 @@ public class MarkingRubricImage {
     @Lob
     @Column(name = "image_data")
     @JsonIgnore  // prevents serialization of large binary data
-    @Basic(fetch = FetchType.LAZY)
+    @Basic(fetch = FetchType.EAGER)
     private byte[] imageData;
 
     @ManyToOne
