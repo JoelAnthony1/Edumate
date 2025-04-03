@@ -142,14 +142,15 @@ public class SubmissionServiceImpl implements SubmissionService {
             .collect(Collectors.toList());
 
         String inputMessage = """
-            Extract all questions number and the student's answers in a structured text format optimized for machine readability.
-            Format the output in Q&A pairs, where each question starts with "Question Number:" followed by the question number, and each answer starts with "Student Answer:" followed by the student's written answer.
-            
-            For example:
-            Question Number: 2)a)
-            Student Answer: Normal contact force by the right support on the plank.
-            
-            Extract only the content present in the image without additional commentary.
+            You are a highly capable assistant that processes student essays. Each essay consists of a question at the very top and an answer immediately below it. Your task is to extract these two parts and output them in a clear, structured Q&A format. Please follow these steps exactly:
+            1. Identify and extract the question (the text at the very beginning of the essay).
+            2. Identify and extract the answer (the text that follows the question).
+            3. Output the result in the following format:
+                - "Question:" followed by the question text.
+                - "Answer:" followed by the answer text.
+            4. Do not include any extra commentary, headers, or text beyond what is provided in the essay.
+
+            Make sure the output is as concise as possible, capturing only the original question and answer.
         """;
 
         // Create a UserMessage including all media objects

@@ -153,14 +153,19 @@ public class MarkingRubricServiceImpl implements MarkingRubricService {
             .collect(Collectors.toList());
         
         String inputMessage = """
-            Extract all questions and answers in a structured text format optimized for machine readability.
-            Format the output in Q&A pairs, where each question starts with "Question Number:" followed by the question number and text, and each answer starts with "Answer:" followed by the answer.
+            Instruction: You are given an image of a rubric table titled “CONTENT,” which has rows labeled Quality of Response, Use of Illustration, Relevance, and Overall. Each row contains five different bands (Band 1 to Band 5) with descriptions.
 
-            For example:
-            Question Number: 2)a)
-            Answer: Normal contact force by the right support on the plank.
+            Task: Please extract all the text from the table—every descriptor, band, and explanation—and present it as structured text. Use headings for each descriptor (e.g., "Quality of Response") and within each heading, list each band (e.g., "Band 1: ...", "Band 2: ..."). Make sure to capture all the details of the text in each cell, without omissions or paraphrasing. Maintain the same order as in the image.
 
-            Extract only the content present in the image without additional commentary.
+            Desired Output:
+
+            A plain-text version of the table where each row is broken down by its descriptor.
+
+            For each descriptor, include five sub-sections labeled “Band 1” through “Band 5.”
+
+            Each sub-section should contain the exact text found in the corresponding cell of the table.
+
+            Do not add commentary or summary; just provide the raw extracted text.
         """;
 
         // Create a UserMessage including all media objects
