@@ -129,41 +129,83 @@ public class MarkingRubricServiceImpl implements MarkingRubricService {
         MarkingRubric rubric = markingRubricRepo.findById(rubricId)
         .orElseThrow(() -> new IllegalArgumentException("MarkingRubric with ID " + rubricId + " not found"));
         
-        //get images from marking_rubric
-        List<MarkingRubricImage> images = rubric.getImages();
-        if (images.isEmpty()) {
-            throw new IllegalArgumentException("No images found for rubric ID " + rubricId);
-        }
+        // COMMENTED OUT AS WE HAVE SET GRADING CRITERIA 
+        // //get images from marking_rubric
+        // List<MarkingRubricImage> images = rubric.getImages();
+        // if (images.isEmpty()) {
+        //     throw new IllegalArgumentException("No images found for rubric ID " + rubricId);
+        // }
 
-        // Convert each image's byte[] into a Media object
-        List<Media> mediaList = images.stream()
-            .map(img -> new Media(MimeTypeUtils.IMAGE_PNG, new ByteArrayResource(img.getImageData())))
-            .collect(Collectors.toList());
+        // // Convert each image's byte[] into a Media object
+        // List<Media> mediaList = images.stream()
+        //     .map(img -> new Media(MimeTypeUtils.IMAGE_PNG, new ByteArrayResource(img.getImageData())))
+        //     .collect(Collectors.toList());
         
-        String inputMessage = """
-            Extract all questions and answers in a structured text format optimized for machine readability.
-            Format the output in Q&A pairs, where each question starts with "Question Number:" followed by the question number and text, and each answer starts with "Answer:" followed by the answer.
+        // String inputMessage = """
+        //     Extract all questions and answers in a structured text format optimized for machine readability.
+        //     Format the output in Q&A pairs, where each question starts with "Question Number:" followed by the question number and text, and each answer starts with "Answer:" followed by the answer.
 
-            For example:
-            Question Number: 2)a)
-            Answer: Normal contact force by the right support on the plank.
+        //     For example:
+        //     Question Number: 2)a)
+        //     Answer: Normal contact force by the right support on the plank.
 
-            Extract only the content present in the image without additional commentary.
-        """;
+        //     Extract only the content present in the image without additional commentary.
+        // """;
 
-        // Create a UserMessage including all media objects
-        var userMessage = new UserMessage(inputMessage, mediaList);
+        // // Create a UserMessage including all media objects
+        // var userMessage = new UserMessage(inputMessage, mediaList);
         
-        // Build a Prompt and call the OpenAI API (using an injected chatClient)
-        var prompt = new Prompt(List.of(userMessage));
+        // // Build a Prompt and call the OpenAI API (using an injected chatClient)
+        // var prompt = new Prompt(List.of(userMessage));
 
-        var responseSpec = chatClient
-            .prompt(prompt)
-            .options(OpenAiChatOptions.builder().build())
-            .call();
-        var chatResponse = responseSpec.chatResponse();
-        String extractedAnswer = chatResponse.getResult().getOutput().getText();
+        // var responseSpec = chatClient
+        //     .prompt(prompt)
+        //     .options(OpenAiChatOptions.builder().build())
+        //     .call();
+        // var chatResponse = responseSpec.chatResponse();
+        // String extractedAnswer = chatResponse.getResult().getOutput().getText();
         
+        String extractedAnswer =
+            "MARK SCHEME FOR CONTINUOUS WRITING\n\n" +
+
+            "CONTENT (10 MARKS):\n" +
+            "Mark Range 9–10:\n" +
+            " - All aspects of the task are fully addressed and developed in detail.\n\n" +
+            "Mark Range 7–8:\n" +
+            " - All aspects of the task are addressed with some development.\n\n" +
+            "Mark Range 5–6:\n" +
+            " - Some aspects of the task are addressed with some development.\n\n" +
+            "Mark Range 3–4:\n" +
+            " - Some aspects of the task are addressed.\n\n" +
+            "Mark Range 1–2:\n" +
+            " - Some attempts to address the task.\n\n" +
+            "Mark Range 0:\n" +
+            " - No creditable response.\n\n" +
+
+            "LANGUAGE (20 MARKS):\n" +
+            "Mark Range 17–20:\n" +
+            " - Coherent and cohesive presentation of ideas across the whole of the response.\n" +
+            " - Effective use of ambitious vocabulary and grammar structures.\n" +
+            " - Complex vocabulary, grammar, punctuation and spelling used accurately.\n\n" +
+            "Mark Range 13–16:\n" +
+            " - Coherent presentation of ideas with some cohesion between paragraphs.\n" +
+            " - Vocabulary and grammar structures sufficiently varied to convey shades of meaning.\n" +
+            " - Vocabulary, grammar, punctuation and spelling used mostly accurately.\n\n" +
+            "Mark Range 9–12:\n" +
+            " - Most ideas coherently presented with some cohesion within paragraphs.\n" +
+            " - Vocabulary and grammar structures sufficiently varied to convey intended meaning.\n" +
+            " - Vocabulary, grammar, punctuation and spelling often used accurately.\n\n" +
+            "Mark Range 5–8:\n" +
+            " - Some ideas coherently presented with attempts at achieving cohesion.\n" +
+            " - Mostly simple vocabulary and grammar structures used; meaning is usually clear.\n" +
+            " - Vocabulary, grammar, punctuation and spelling used with varying degrees of accuracy.\n\n" +
+            "Mark Range 1–4:\n" +
+            " - Ideas presented in isolation.\n" +
+            " - Simple vocabulary and grammar structures used.\n" +
+            " - A few examples of correct use of vocabulary, grammar, punctuation and spelling.\n\n" +
+            "Mark Range 0:\n" +
+            " - No creditable response.";
+
         //store extracted answer in GradingCriteria
         rubric.setGradingCriteria(extractedAnswer);
 
@@ -191,27 +233,7 @@ public class MarkingRubricServiceImpl implements MarkingRubricService {
 
         // Extract only the questions from the image
         String questionPrompt = """
-            Extract only the questions from the provided image in a structured text format optimized for machine readability.
-            Format the output as follows:
-            Question Number: [Question number as it appears in the image]
-            Question: [Question text as it appears in the image]
-            
-            For example:
-            Question Number: 1)i)
-            Question: Show that 4|4𝑥 − 6| − 2|9 − 6𝑥| = 𝑘|2𝑥 − 3|, where k is a constant
-            
-            Ensure that:
-            - Fractions are written using `/` (e.g., `5/3`).
-            - Mixed fractions (e.g., `2 3/4`) should be written explicitly with spaces.
-            - Absolute values are represented as `|x|`.
-            - Square roots are written as `sqrt(x)`.
-            - Powers are written using `^` (e.g., `x^2`).
-            - Parentheses are preserved exactly.
-            - Inequalities and equalities (`=`, `<`, `>`, `<=`, `>=`) are captured accurately.
-            - Greek letters and trigonometric functions remain unchanged.
-            - Multi-line equations maintain correct line breaks.
-            - Minus signs are extracted correctly.
-            Extract only the question text as it appears in the image without additional commentary.
+            Extract only the essay question text and the associated images from the uploaded file. Do not include any introductory or explanatory text.
         """;
 
         var questionUserMessage = new UserMessage(questionPrompt, mediaList);
