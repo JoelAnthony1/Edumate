@@ -141,7 +141,6 @@ public class MarkingRubricServiceImpl implements MarkingRubricService {
         MarkingRubric rubric = markingRubricRepo.findById(rubricId)
         .orElseThrow(() -> new IllegalArgumentException("MarkingRubric with ID " + rubricId + " not found"));
         
-        COMMENTED OUT AS WE HAVE SET GRADING CRITERIA 
         //get images from marking_rubric
         List<MarkingRubricImage> images = rubric.getImages();
         if (images.isEmpty()) {
