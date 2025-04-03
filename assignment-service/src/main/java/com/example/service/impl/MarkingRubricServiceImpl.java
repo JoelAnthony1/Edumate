@@ -141,17 +141,17 @@ public class MarkingRubricServiceImpl implements MarkingRubricService {
         MarkingRubric rubric = markingRubricRepo.findById(rubricId)
         .orElseThrow(() -> new IllegalArgumentException("MarkingRubric with ID " + rubricId + " not found"));
         
-        // COMMENTED OUT AS WE HAVE SET GRADING CRITERIA 
-        // //get images from marking_rubric
-        // List<MarkingRubricImage> images = rubric.getImages();
-        // if (images.isEmpty()) {
-        //     throw new IllegalArgumentException("No images found for rubric ID " + rubricId);
-        // }
+        COMMENTED OUT AS WE HAVE SET GRADING CRITERIA 
+        //get images from marking_rubric
+        List<MarkingRubricImage> images = rubric.getImages();
+        if (images.isEmpty()) {
+            throw new IllegalArgumentException("No images found for rubric ID " + rubricId);
+        }
 
-        // // Convert each image's byte[] into a Media object
-        // List<Media> mediaList = images.stream()
-        //     .map(img -> new Media(MimeTypeUtils.IMAGE_PNG, new ByteArrayResource(img.getImageData())))
-        //     .collect(Collectors.toList());
+        // Convert each image's byte[] into a Media object
+        List<Media> mediaList = images.stream()
+            .map(img -> new Media(MimeTypeUtils.IMAGE_PNG, new ByteArrayResource(img.getImageData())))
+            .collect(Collectors.toList());
         
         String inputMessage = """
             Instruction: You are given an image of a rubric table titled “CONTENT,” which has rows labeled Quality of Response, Use of Illustration, Relevance, and Overall. Each row contains five different bands (Band 1 to Band 5) with descriptions.
@@ -169,59 +169,59 @@ public class MarkingRubricServiceImpl implements MarkingRubricService {
             Do not add commentary or summary; just provide the raw extracted text.
         """;
 
-        // // Create a UserMessage including all media objects
-        // var userMessage = new UserMessage(inputMessage, mediaList);
+        // Create a UserMessage including all media objects
+        var userMessage = new UserMessage(inputMessage, mediaList);
         
-        // // Build a Prompt and call the OpenAI API (using an injected chatClient)
-        // var prompt = new Prompt(List.of(userMessage));
+        // Build a Prompt and call the OpenAI API (using an injected chatClient)
+        var prompt = new Prompt(List.of(userMessage));
 
-        // var responseSpec = chatClient
-        //     .prompt(prompt)
-        //     .options(OpenAiChatOptions.builder().build())
-        //     .call();
-        // var chatResponse = responseSpec.chatResponse();
-        // String extractedAnswer = chatResponse.getResult().getOutput().getText();
+        var responseSpec = chatClient
+            .prompt(prompt)
+            .options(OpenAiChatOptions.builder().build())
+            .call();
+        var chatResponse = responseSpec.chatResponse();
+        String extractedAnswer = chatResponse.getResult().getOutput().getText();
         
-        String extractedAnswer =
-            "MARK SCHEME FOR CONTINUOUS WRITING\n\n" +
+        // String extractedAnswer =
+        //     "MARK SCHEME FOR CONTINUOUS WRITING\n\n" +
 
-            "CONTENT (10 MARKS):\n" +
-            "Mark Range 9–10:\n" +
-            " - All aspects of the task are fully addressed and developed in detail.\n\n" +
-            "Mark Range 7–8:\n" +
-            " - All aspects of the task are addressed with some development.\n\n" +
-            "Mark Range 5–6:\n" +
-            " - Some aspects of the task are addressed with some development.\n\n" +
-            "Mark Range 3–4:\n" +
-            " - Some aspects of the task are addressed.\n\n" +
-            "Mark Range 1–2:\n" +
-            " - Some attempts to address the task.\n\n" +
-            "Mark Range 0:\n" +
-            " - No creditable response.\n\n" +
+        //     "CONTENT (10 MARKS):\n" +
+        //     "Mark Range 9–10:\n" +
+        //     " - All aspects of the task are fully addressed and developed in detail.\n\n" +
+        //     "Mark Range 7–8:\n" +
+        //     " - All aspects of the task are addressed with some development.\n\n" +
+        //     "Mark Range 5–6:\n" +
+        //     " - Some aspects of the task are addressed with some development.\n\n" +
+        //     "Mark Range 3–4:\n" +
+        //     " - Some aspects of the task are addressed.\n\n" +
+        //     "Mark Range 1–2:\n" +
+        //     " - Some attempts to address the task.\n\n" +
+        //     "Mark Range 0:\n" +
+        //     " - No creditable response.\n\n" +
 
-            "LANGUAGE (20 MARKS):\n" +
-            "Mark Range 17–20:\n" +
-            " - Coherent and cohesive presentation of ideas across the whole of the response.\n" +
-            " - Effective use of ambitious vocabulary and grammar structures.\n" +
-            " - Complex vocabulary, grammar, punctuation and spelling used accurately.\n\n" +
-            "Mark Range 13–16:\n" +
-            " - Coherent presentation of ideas with some cohesion between paragraphs.\n" +
-            " - Vocabulary and grammar structures sufficiently varied to convey shades of meaning.\n" +
-            " - Vocabulary, grammar, punctuation and spelling used mostly accurately.\n\n" +
-            "Mark Range 9–12:\n" +
-            " - Most ideas coherently presented with some cohesion within paragraphs.\n" +
-            " - Vocabulary and grammar structures sufficiently varied to convey intended meaning.\n" +
-            " - Vocabulary, grammar, punctuation and spelling often used accurately.\n\n" +
-            "Mark Range 5–8:\n" +
-            " - Some ideas coherently presented with attempts at achieving cohesion.\n" +
-            " - Mostly simple vocabulary and grammar structures used; meaning is usually clear.\n" +
-            " - Vocabulary, grammar, punctuation and spelling used with varying degrees of accuracy.\n\n" +
-            "Mark Range 1–4:\n" +
-            " - Ideas presented in isolation.\n" +
-            " - Simple vocabulary and grammar structures used.\n" +
-            " - A few examples of correct use of vocabulary, grammar, punctuation and spelling.\n\n" +
-            "Mark Range 0:\n" +
-            " - No creditable response.";
+        //     "LANGUAGE (20 MARKS):\n" +
+        //     "Mark Range 17–20:\n" +
+        //     " - Coherent and cohesive presentation of ideas across the whole of the response.\n" +
+        //     " - Effective use of ambitious vocabulary and grammar structures.\n" +
+        //     " - Complex vocabulary, grammar, punctuation and spelling used accurately.\n\n" +
+        //     "Mark Range 13–16:\n" +
+        //     " - Coherent presentation of ideas with some cohesion between paragraphs.\n" +
+        //     " - Vocabulary and grammar structures sufficiently varied to convey shades of meaning.\n" +
+        //     " - Vocabulary, grammar, punctuation and spelling used mostly accurately.\n\n" +
+        //     "Mark Range 9–12:\n" +
+        //     " - Most ideas coherently presented with some cohesion within paragraphs.\n" +
+        //     " - Vocabulary and grammar structures sufficiently varied to convey intended meaning.\n" +
+        //     " - Vocabulary, grammar, punctuation and spelling often used accurately.\n\n" +
+        //     "Mark Range 5–8:\n" +
+        //     " - Some ideas coherently presented with attempts at achieving cohesion.\n" +
+        //     " - Mostly simple vocabulary and grammar structures used; meaning is usually clear.\n" +
+        //     " - Vocabulary, grammar, punctuation and spelling used with varying degrees of accuracy.\n\n" +
+        //     "Mark Range 1–4:\n" +
+        //     " - Ideas presented in isolation.\n" +
+        //     " - Simple vocabulary and grammar structures used.\n" +
+        //     " - A few examples of correct use of vocabulary, grammar, punctuation and spelling.\n\n" +
+        //     "Mark Range 0:\n" +
+        //     " - No creditable response.";
 
         //store extracted answer in GradingCriteria
         rubric.setGradingCriteria(extractedAnswer);
