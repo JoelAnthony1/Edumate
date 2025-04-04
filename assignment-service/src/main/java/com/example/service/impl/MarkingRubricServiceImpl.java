@@ -155,7 +155,7 @@ public class MarkingRubricServiceImpl implements MarkingRubricService {
         String inputMessage = """
             Instruction: You are given an image of a rubric table titled “CONTENT,” which has rows labeled Quality of Response, Use of Illustration, Relevance, and Overall. Each row contains five different bands (Band 1 to Band 5) with descriptions.
 
-            Task: Please extract all the text from the table—every descriptor, band, and explanation—and present it as structured text. Use headings for each descriptor (e.g., "Quality of Response") and within each heading, list each band (e.g., "Band 1: ...", "Band 2: ..."). Make sure to capture all the details of the text in each cell, without omissions or paraphrasing. Maintain the same order as in the image.
+            Task: Please extract all the text from the table—every descriptor, band, and explanation—and present it as structured text. Use headings for each descriptor (e.g., "Quality of Response") and within each heading, list each band (e.g., "Band 1: ...", "Band 2: ...") and the marks allocated for each band. Make sure to capture all the details of the text in each cell, without omissions or paraphrasing. Maintain the same order as in the image.
 
             Desired Output:
 

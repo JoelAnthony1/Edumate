@@ -217,8 +217,10 @@ public class SubmissionServiceImpl implements SubmissionService {
                 "Compare the student's work against the model script provided in the system message. " +
                 "Grading Criteria:\n%s\n\n" +
                 "Student's Submission:\n%s\n\n" +
-                "Provide detailed, critical feedback on the student's submission, highlighting both strengths and weaknesses, " +
-                "and conclude with a final score on a new line prefixed with 'Total Score:' (e.g., 'Score: 18/30').",
+                "Provide detailed, critical feedback on the student's submission, highlighting both strengths and weaknesses." +
+                "Provide the individual marks for each component in the grading criteria " +
+                "and conclude with a final score on a new line prefixed with 'Total Score:' (e.g., 'Score: 18/30')."  + 
+                "The total score should be out of 30 since the first component is worth 10 marks and the second component is worth 20 marks.",
                 gradingCriteria, writtenAnswer
             )
         );
