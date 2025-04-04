@@ -16,7 +16,7 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 
 //AI import
-import org.springframework.ai.model.Media;
+import org.springframework.ai.content.Media;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.chat.client.ChatClient;
 
