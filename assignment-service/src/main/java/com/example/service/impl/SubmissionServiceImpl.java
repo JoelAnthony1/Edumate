@@ -147,15 +147,15 @@ public class SubmissionServiceImpl implements SubmissionService {
             .collect(Collectors.toList());
 
         String inputMessage = """
-            You are a highly capable assistant that processes student essays. Each essay consists of a question at the very top and an answer immediately below it. Your task is to extract these two parts and output them in a clear, structured Q&A format. Please follow these steps exactly:
-            1. Identify and extract the question (the text at the very beginning of the essay).
-            2. Identify and extract the answer (the text that follows the question).
-            3. Output the result in the following format:
-                - "Question:" followed by the question text.
-                - "Answer:" followed by the answer text.
-            4. Do not include any extra commentary, headers, or text beyond what is provided in the essay.
+            Extract the chosen question number and the respective essay topic in this format:
+            Chosen Question Number: ..
+            Essay Topic: ..
 
-            Make sure the output is as concise as possible, capturing only the original question and answer.
+            Then extract the student's written answer for the question 
+
+            Students Essay: ..
+
+            Extract only the content present in the image without additional commentary.
         """;
 
         // Create a UserMessage including all media objects
@@ -218,7 +218,7 @@ public class SubmissionServiceImpl implements SubmissionService {
                 "Grading Criteria:\n%s\n\n" +
                 "Student's Submission:\n%s\n\n" +
                 "Provide detailed, critical feedback on the student's submission, highlighting both strengths and weaknesses, " +
-                "and conclude with a final score on a new line prefixed with 'Score:' (e.g., 'Score: 18/30').",
+                "and conclude with a final score on a new line prefixed with 'Total Score:' (e.g., 'Score: 18/30').",
                 gradingCriteria, writtenAnswer
             )
         );
